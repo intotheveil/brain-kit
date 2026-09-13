@@ -1,6 +1,6 @@
 {
   "name": "@alexadamis/brain-kit",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Alias of agent-brain-kit. A file-based memory discipline for coding agents: BRAIN.md, a project-constitution generator, and enforcement hooks.",
   "keywords": [
     "brain-kit",
