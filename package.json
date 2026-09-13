@@ -1,0 +1,55 @@
+{
+  "name": "brain-kit",
+  "version": "0.1.0",
+  "description": "A file-based memory discipline for coding agents: BRAIN.md, a project-constitution generator, and the hooks that stop it rotting.",
+  "keywords": [
+    "claude",
+    "claude-code",
+    "claude-md",
+    "agents-md",
+    "ai-agent",
+    "coding-agent",
+    "agent-memory",
+    "context-engineering",
+    "context-window",
+    "llm",
+    "llm-tools",
+    "prompt-engineering",
+    "developer-tools",
+    "documentation",
+    "knowledge-base",
+    "monorepo",
+    "cursor",
+    "copilot",
+    "codex",
+    "handover"
+  ],
+  "type": "module",
+  "bin": {
+    "brain-kit": "kit.mjs"
+  },
+  "files": [
+    "kit.mjs",
+    "sync-hooks.sh",
+    "verify-kit.sh",
+    "CLAUDE.core.md",
+    "BRAIN_DISCIPLINE.md",
+    "templates/",
+    "hooks/",
+    "README.md",
+    "LICENSE"
+  ],
+  "engines": {
+    "node": ">=18"
+  },
+  "license": "MIT",
+  "author": "intotheveil",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/intotheveil/brain-kit.git"
+  },
+  "bugs": {
+    "url": "https://github.com/intotheveil/brain-kit/issues"
+  },
+  "homepage": "https://github.com/intotheveil/brain-kit#readme"
+}
