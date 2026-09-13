@@ -207,8 +207,9 @@ running only the tests. Names of private repos have been removed; the lessons ha
 ## Support
 
 This is free and MIT, and it stays that way. If it saved you an afternoon of re-explaining
-your own codebase to an agent, you can say thanks with the **Sponsor** button at the top of
-the repo — entirely optional, and it buys no priority, no support and no roadmap influence.
+your own codebase to an agent, you can say thanks at **[ko-fi.com/alexdam](https://ko-fi.com/alexdam)**
+or with the **Sponsor** button at the top of the repo — entirely optional, and it buys no
+priority, no support and no roadmap influence.
 
 Starring the repo genuinely helps more: it is how other people find this kind of thing.
 
