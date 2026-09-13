@@ -105,6 +105,7 @@ projects/
 | file | what it is |
 |---|---|
 | `templates/BRAIN.template.md` | The eight-section brain. Copy per repo. |
+| `examples/BRAIN.example.md` | **A filled-in brain from real use.** Start here if you want convincing. |
 | `BRAIN_DISCIPLINE.md` | The loop, on one page. Paste into your agent's instructions. |
 | `CLAUDE.core.md` | A full project constitution — the half shared by every repo. |
 | `templates/CLAUDE.project.template.md` | The half each repo owns (stack, commands, quirks). |
@@ -138,6 +139,10 @@ entry from the fleet this kit came from:
 
 That is one debugging session someone never has to repeat. Twenty of those in a file is worth more
 than any amount of prompt engineering.
+
+👉 **[Read a filled-in brain → `examples/BRAIN.example.md`](examples/BRAIN.example.md)** — all eight
+sections, a real §5 with seventeen entries. The template shows you the shape; the example shows you
+why anyone bothers. If you read one file in this repo, read that one.
 
 ---
 
