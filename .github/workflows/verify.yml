@@ -1,0 +1,81 @@
+name: verify
+
+# L6. Two jobs with different jobs to do:
+#
+#   `repo`      — checks THIS tree on every push and PR. Fast, no network beyond the checkout.
+#   `published` — checks what a STRANGER actually installs, on a schedule. It downloads all
+#                 three packages from npm into a throwaway directory and ignores the working
+#                 tree entirely, so it catches things a repo-only run cannot: a yanked
+#                 dependency, a bad republish, an alias whose `dependencies` stopped resolving.
+#
+# The scheduled half is the point. The repo can be perfectly healthy while the published
+# artifact is broken — which already happened once here: claude-brain-kit@0.1.0 shipped
+# depending on a package that could never exist, and nothing would have noticed on its own.
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  schedule:
+    # Weekly. The registry does not change on its own often, and a noisy scheduled job that
+    # nobody reads is worse than none.
+    - cron: '17 6 * * 1'
+  workflow_dispatch:
+
+jobs:
+  repo:
+    name: this tree
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: every shell script parses
+        run: |
+          set -e
+          for f in *.sh hooks/*.sh test/*.sh; do
+            [ -e "$f" ] || continue
+            bash -n "$f"
+            echo "  OK  $f"
+          done
+
+      - name: kit.mjs unit tests
+        run: node test/test-kit.mjs
+
+      - name: package manifests are valid JSON
+        run: |
+          set -e
+          for f in package.json packages/*/package.json; do
+            node -e "JSON.parse(require('fs').readFileSync('$f','utf8'))"
+            echo "  OK  $f"
+          done
+
+      - name: no private fleet references leaked
+        run: |
+          # The kit was extracted from a private fleet. Anything that reads like an internal
+          # repo name, host or absolute path should never reappear in a public commit.
+          #
+          # `workflows` is excluded because THIS FILE contains the pattern and would match
+          # itself — the check reported a leak on its first run, and the leak was the check.
+          if grep -rInE 'intotheveil/(zeus|ares|pipepro|tenderforge|hera|pluto|cicada|hyperion|daedalus|lss|hr-checkin|aeolus|argus)|uehmanlrjyjftmurvqhh|D:[\\/]projects|C:[\\/]Users' \
+               --exclude-dir=.git --exclude-dir=workflows . ; then
+            echo "::error::a private fleet reference is present"
+            exit 1
+          fi
+          echo "  OK  no private references"
+
+  published:
+    name: published packages
+    runs-on: ubuntu-latest
+    # Only where it is meaningful: a PR from a fork cannot change what is on the registry.
+    if: github.event_name == 'schedule' || github.event_name == 'workflow_dispatch' || github.event_name == 'push'
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: verify what a stranger installs
+        run: bash test/verify-published.sh
