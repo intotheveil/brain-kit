@@ -31,7 +31,10 @@ const repo = argv[1];
 const rootFlag = argv.indexOf('--fleet-root');
 
 const die = (msg, code = 1) => { console.error(msg); process.exit(code); };
-if (!cmd || !repo || repo.startsWith('--')) {
+// A FLAG IS NOT A COMMAND. This checked `repo` for a leading '--' but not `cmd`, so
+// `kit.mjs --fleet-root DIR` parsed '--fleet-root' as the command and DIR as the repo,
+// then failed with a confusing 'no repo' naming the root twice. Found by test-kit.mjs.
+if (!cmd || cmd.startsWith('--') || !repo || repo.startsWith('--')) {
   die('usage: kit.mjs <init|compose|apply|check> <repo> [--fleet-root DIR]', 2);
 }
 
