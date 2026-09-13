@@ -1,33 +1,29 @@
 {
-  "name": "agent-brain-kit",
+  "name": "@alexadamis/brain-kit",
   "version": "0.1.0",
-  "description": "Persistent memory for coding agents: a BRAIN.md discipline, a project-constitution generator, and enforcement hooks. Alias of brain-kit.",
+  "description": "Alias of agent-brain-kit. A file-based memory discipline for coding agents: BRAIN.md, a project-constitution generator, and enforcement hooks.",
   "keywords": [
-    "ai-agent",
-    "coding-agent",
+    "brain-kit",
     "agent-memory",
-    "agents-md",
+    "claude-code",
+    "ai-agent",
     "context-engineering",
-    "context-window",
     "llm",
-    "llm-tools",
-    "autonomous-agents",
-    "brain-md",
-    "cursor",
-    "copilot",
-    "codex",
     "developer-tools"
   ],
   "type": "module",
   "bin": {
-    "agent-brain-kit": "bin.mjs"
+    "brain-kit": "bin.mjs"
   },
   "files": [
     "bin.mjs",
     "README.md"
   ],
   "dependencies": {
-    "brain-kit": "^0.1.0"
+    "agent-brain-kit": "^0.1.0"
+  },
+  "publishConfig": {
+    "access": "public"
   },
   "engines": {
     "node": ">=18"
@@ -37,7 +33,7 @@
   "repository": {
     "type": "git",
     "url": "git+https://github.com/intotheveil/brain-kit.git",
-    "directory": "packages/agent-brain-kit"
+    "directory": "packages/brain-kit-scoped"
   },
   "homepage": "https://github.com/intotheveil/brain-kit#readme"
 }

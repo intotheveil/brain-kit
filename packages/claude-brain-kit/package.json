@@ -1,6 +1,6 @@
 {
   "name": "claude-brain-kit",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Persistent memory for Claude Code: a BRAIN.md discipline, a CLAUDE.md generator, and hooks that enforce it. Alias of brain-kit.",
   "keywords": [
     "claude",
@@ -25,7 +25,7 @@
     "README.md"
   ],
   "dependencies": {
-    "brain-kit": "^0.1.0"
+    "agent-brain-kit": "^0.1.0"
   },
   "engines": {
     "node": ">=18"

@@ -1,7 +1,7 @@
 {
-  "name": "brain-kit",
+  "name": "agent-brain-kit",
   "version": "0.1.0",
-  "description": "A file-based memory discipline for coding agents: BRAIN.md, a project-constitution generator, and the hooks that stop it rotting.",
+  "description": "Persistent memory for coding agents: a BRAIN.md discipline read before every session and written after, a project-constitution generator that keeps many repos aligned, and hooks that enforce it.",
   "keywords": [
     "claude",
     "claude-code",
@@ -26,7 +26,7 @@
   ],
   "type": "module",
   "bin": {
-    "brain-kit": "kit.mjs"
+    "agent-brain-kit": "kit.mjs"
   },
   "files": [
     "kit.mjs",
