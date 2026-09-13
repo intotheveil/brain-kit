@@ -79,6 +79,11 @@ npx brain-kit init  myrepo
 npx brain-kit apply myrepo
 ```
 
+> **Three names, one tool.** `brain-kit`, `claude-brain-kit` and `agent-brain-kit` are published as
+> aliases of the same implementation, because people look for this under all three. The alias
+> packages are three lines each and depend on `brain-kit` — there is no forked copy to drift out of
+> sync, and each one says on its own npm page that it is an alias.
+
 By default the kit treats **its own parent directory** as the root your repos are siblings in.
 Override with `--fleet-root DIR` (`kit.mjs`) or a first argument (the shell scripts):
 

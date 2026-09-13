@@ -51,5 +51,10 @@
   "bugs": {
     "url": "https://github.com/intotheveil/brain-kit/issues"
   },
-  "homepage": "https://github.com/intotheveil/brain-kit#readme"
+  "homepage": "https://github.com/intotheveil/brain-kit#readme",
+  "exports": {
+    ".": "./kit.mjs",
+    "./kit.mjs": "./kit.mjs",
+    "./package.json": "./package.json"
+  }
 }
