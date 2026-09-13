@@ -183,6 +183,20 @@ the reason. `BRAIN_KIT_STRICT=1` (or `ZEUS_STRICT=1`) turns any skip into a hard
 
 ---
 
+## Verifying it yourself
+
+Don't take the claims on trust — the repo ships the check:
+
+```bash
+bash test/verify-published.sh
+```
+
+It downloads all three packages from npm into a throwaway directory and runs 39 checks against
+what a stranger actually gets, not what happens to be in this working tree. Two of them are
+deliberately adversarial, because a suite that only confirms the happy path cannot tell you it is
+working: `apply` must **refuse** a half-filled project half, and `check` must **catch** a CORE
+block that has been edited.
+
 ## Honest caveats
 
 - **The hooks are Claude-Code-specific; the method is not.** `BRAIN.md` and the loop work with any
