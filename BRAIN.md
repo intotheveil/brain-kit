@@ -78,6 +78,8 @@ a stranger in one command.
 
 ## 5. GOTCHAS
 
+- **💾 Drive F: changed hardware on 2026-10-13 — every path is unchanged.** F: used to be the external USB Kingston (exFAT, 1.9 TB). It is now the internal 4 TB Lexar NVMe (NTFS, label `Storage`): all its data was copied across and the new disk took the letter F:. Every `F:\…` path, and every junction on C: that points into F: (Last Seen, Stay Inside and the other Unreal projects, Reliquary's `art_src`/`build`), still resolves. The USB disk is unplugged. Older notes that blame F: being USB or exFAT (slow I/O, file locks, no file ownership) may no longer hold, and NTFS now records file ownership, so git may ask for `safe.directory` on a repo there.
+
 - **🔴 `npm view <name>` RETURNING 404 MEANS UNREGISTERED, NOT PUBLISHABLE.** `brain-kit` was
   404 on every read and still refused at publish: *"Package name too similar to existing package
   **brainkit**"*. The blocker is an abandoned `brainkit@0.0.0` whose description is the literal
