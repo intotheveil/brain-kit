@@ -42,6 +42,27 @@ The payoff is that handovers stop existing. The brain *is* the handover, continu
 reads `BRAIN.md` and is immediately as informed as the chat that got too big. Start new chats
 freely; nothing is lost.
 
+### What a new session looks like
+
+Without a brain:
+
+```
+you:    Add a retry to the upload code.
+agent:  Let me explore the repo first...   (reads 40 files, guesses how uploads work)
+you:    No, we tried retries in March. It broke the queue.
+agent:  I did not know that.
+```
+
+With a brain:
+
+```
+you:    Add a retry to the upload code.
+agent:  Reading BRAIN.md... §5 says retries on uploads break the queue (tried in March).
+        I will add a backoff on the client side instead. Starting now.
+```
+
+The agent was not smarter. The answer was written down once, and it read the file.
+
 ---
 
 ## Quickstart
