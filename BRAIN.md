@@ -8,7 +8,7 @@
 > Yes, this repo keeps the discipline it ships. A kit that told you to keep a brain while keeping
 > none would be worth exactly what it cost you.
 
-**Last updated:** 2026-09-13 by Claude Code (Opus, Windows desktop) — **published.** Public on
+**Last updated:** 2026-10-17 by Claude Code (Sonnet 5.5, Windows desktop) — core ported, README example, v0.1.0 release, r/ClaudeAI post made by the operator. Previously 2026-09-13 — **published.** Public on
 GitHub (MIT) and live on npm as three packages, verified from the registry by a 39-check harness.
 **Zero stars, zero users, hours old** — which is the honest state and also what blocks the curated
 lists (§4 L1).
@@ -68,7 +68,7 @@ a stranger in one command.
 | id  | sev | type | summary | status | added |
 | --- | --- | ---- | ------- | ------ | ----- |
 | L1  | 🟡 | task | **DEFERRED by the operator 2026-09-13 — another time.** Submit to `hesreallyhim/awesome-claude-code` (54k ★). Their rule: 14 DAYS OLD with continued commits, OR 100+ stars — this repo fails both today and a failing submission is **auto-closed**, so the earliest it can even be attempted is ≈ 2026-09-27. Must go via their web issue form (not a PR, not the API) or you risk an interaction restriction. Prepared entry text is in the private fleet notes. **Their own CONTRIBUTING says why this ordering is right: get users, then submit — not the reverse.** | open | 2026-09-13 |
-| L2  | 🟡 | task | **Post to r/ClaudeAI.** Draft written (problem-first: opens on re-explaining your codebase every session, leads with the CRLF gotcha, mentions the tool last). Check the subreddit's current self-promotion rules before posting. | open | 2026-09-13 |
+| L2  | 🟡 | task | ~~Post to r/ClaudeAI~~ — **CLOSED 2026-10-17: the operator posted it** from a new account (plain-words draft, no fleet mentions). Watch for replies and stars (L3). A second post in r/ClaudeCode is possible a few days later with changed text. | closed | 2026-09-13 |
 | L3  | 🟡 | task | **Get the first stars.** A submission landing on a 0-star repo converts badly — people check. Blocks L1 and weakens L2. | open | 2026-09-13 |
 | L4  | 🟠 | gap | ~~This repo and the private kit it came from will drift, and nothing prevents it~~ — **CLOSED 2026-09-13.** The upstream fleet added `compare-public.sh`, which records a FORK POINT for the 15 shared file pairs and reports which SIDE has moved since. Deliberately not a copier and not an equality check: most shared files legitimately differ (private names stripped, root resolved from this checkout, `templates/` layout), so copying would regress that and demanding equality would be permanently red and ignored. Proven on first real use — it caught a `kit.mjs` fix made upstream and not yet ported, which was then ported here (the flag-as-command fix + `test/test-kit.mjs`). **This repo is the downstream side: changes made HERE still need carrying back, and that is the direction with no one watching it.** | closed | 2026-09-13 |
 | L5  | 🟡 | bug | ~~`claude-brain-kit@0.1.0` is permanently broken on npm~~ — **CLOSED 2026-09-13 as MITIGATED, not fixed.** It published depending on `brain-kit@^0.1.0`, a package the name-similarity guard then made impossible. npm does not allow unpublishing after 72h, so **the bad version stays on the registry forever** and anyone pinning that exact version gets a failure. What was done is all that can be: it is `npm deprecate`d with a pointer, and `latest` is 0.1.2, which resolves correctly. Closed because no action remains — not because the wart is gone. | closed | 2026-09-13 |
@@ -122,6 +122,14 @@ a stranger in one command.
 ---
 
 ## 6. CHANGELOG
+
+### 2026-10-17 — core ported, README example, v0.1.0 release, Reddit post
+
+- **Ported to `CLAUDE.core.md` only (operator: core changes only):** the `researcher` agent line, generic model tiers (no local-AI paragraph), the one-writer-per-checkout rule and the worktree rule. Left out the sentence about the SubagentStop gate lock because the public `subagent-gate.sh` has no lock yet.
+- **Still NOT ported (drift remains, do not run `compare-public.sh --accept`):** `kit.mjs` (CRLF fix), `sync-hooks.sh`, `verify-kit.sh`, hooks `guard.sh`, `format.sh`, `subagent-gate.sh`, `client-data-scan.sh`. npm is still 0.1.0 and does not carry the new core text; bump to 0.1.1 only with a deliberate publish.
+- README gained "What a new session looks like" (without/with a brain). Tag and GitHub release `v0.1.0` created on the published commit `f200293`. `docs/` is still an empty folder.
+- The operator posted to r/ClaudeAI. Commits: core port `b035f35`, README, tag `v0.1.0`.
+- **Left off:** port the 7 remaining files, then 0.1.1; watch the Reddit post.
 
 ### 2026-09-13 — extracted, generalized, published, verified
 
