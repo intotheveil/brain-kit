@@ -92,8 +92,18 @@ decomposes a spec into tasks and delegates to the subagents in `.claude/agents/`
 - `qa`        — independent validation; PROVES the phase works against objective runnable
   criteria (migrations apply on fresh DB, tests green, no tenant leak). Does not judge style.
 - `reviewer`  — quality judgment AFTER qa passes; grades against the rubric in §6.
+- `researcher` — web research the codebase cannot answer; writes ONE sourced report to
+  `docs/research/<topic>.md` and never touches product code.
+
+**Models.** Each agent's model is pinned in its frontmatter: `planner` and `reviewer` run on
+**opus** (judgment), `builder`, `test-writer`, `qa` and `researcher` on **sonnet**, `explore` on
+**haiku**. Do not override a tier on dispatch without a reason logged in `BUILD_LOG.md`.
 
 **Task loop:** builder → test-writer → (commit candidate).
+**One writer per checkout.** Code-producing agents running in parallel each get their own git
+worktree (`isolation: worktree` on the dispatch, or in the agent's frontmatter); in a shared
+checkout they run one at a time. Two builders in one tree share one index and one suite — each
+one's half-done change turns the other's gate red.
 **Phase gate (before a phase is claimed):** qa (VALIDATED) → reviewer (PASS) → CHECKPOINT.
 qa and reviewer are DIFFERENT agents than the builder — no self-certification. A phase is
 never claimed until qa proves it works AND reviewer judges it good AND hooks pass. QA failure
@@ -118,6 +128,9 @@ returns to builder with exact failing checks; review failure returns with specif
   error and the approaches tried, then move to the next independent task. Never fake a
   passing test to get unblocked.
 - **Never weaken a test to make it pass.** Fix the code or log the block.
+- **Parallel work goes in worktrees, and a worktree is its owner's.** Never write into a
+  worktree another session or agent is using, and never run a kit sync against one — its
+  changes reach the main checkout by commit and merge, not by a shared working tree.
 - **Running the real thing is a gate, not a courtesy.** A green suite is not proof the
   artifact works. If a task produces something that RUNS — a binary, a CLI, a launcher, a
   deploy — exercise it and record the observable, not just the exit code.
