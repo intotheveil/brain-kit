@@ -1,6 +1,6 @@
 {
   "name": "agent-brain-kit",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "Persistent memory for coding agents: a BRAIN.md discipline read before every session and written after, a project-constitution generator that keeps many repos aligned, and hooks that enforce it.",
   "keywords": [
     "claude",
@@ -30,12 +30,15 @@
   },
   "files": [
     "kit.mjs",
+    "lib/",
     "sync-hooks.sh",
+    "sync-agents.sh",
     "verify-kit.sh",
     "CLAUDE.core.md",
     "BRAIN_DISCIPLINE.md",
     "templates/",
     "hooks/",
+    "agents/",
     "README.md",
     "LICENSE"
   ],
