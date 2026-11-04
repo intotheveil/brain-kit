@@ -10,7 +10,12 @@
 // three different guard.sh files and eight repos whose agents cited a section that did not
 // exist in them. Prose does not converge; a generator does.
 //
-// Commands:
+// Commands — one repo, in one shot:
+//   node kit.mjs setup  [dir]     install BRAIN.md, .claude/CLAUDE.md, the crew agents, the
+//                                 hooks and their settings wiring. Never overwrites a file.
+//   node kit.mjs doctor [dir]     grade a repo's brain health, score out of 100.
+//
+// Commands — many repos, one shared constitution:
 //   node kit.mjs init    <repo>   propose .claude/CLAUDE.project.md (never writes CLAUDE.md)
 //   node kit.mjs compose <repo>   print the composed CLAUDE.md to stdout
 //   node kit.mjs apply   <repo>   write .claude/CLAUDE.md (backs up the previous file)
@@ -20,9 +25,10 @@
 // directory your repos are siblings in).
 // Exit codes: 0 ok · 1 real failure · 2 inconclusive (could not check — never a silent pass).
 
-import { readFileSync, writeFileSync, existsSync, copyFileSync, mkdirSync } from 'node:fs';
+import { readFileSync, writeFileSync, existsSync, copyFileSync, mkdirSync, statSync } from 'node:fs';
 import { join, dirname, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
+import { parseBlocks } from './lib/blocks.mjs';
 
 const KIT = dirname(fileURLToPath(import.meta.url));
 const argv = process.argv.slice(2);
@@ -31,11 +37,26 @@ const repo = argv[1];
 const rootFlag = argv.indexOf('--fleet-root');
 
 const die = (msg, code = 1) => { console.error(msg); process.exit(code); };
+
+const USAGE = `usage:
+  agent-brain-kit setup  [dir] [--full] [--no-crew] [--no-hooks] [--dry-run]
+  agent-brain-kit doctor [dir] [--json]
+  agent-brain-kit <init|compose|apply|check> <repo> [--fleet-root DIR]`;
+
+if (cmd === '--help' || cmd === '-h' || cmd === 'help') { console.log(USAGE); process.exit(0); }
+
+// setup and doctor work on ONE directory (default: cwd) and take no fleet root, so they are
+// dispatched before the <repo> resolution below, which they would otherwise trip over.
+if (cmd === 'setup' || cmd === 'doctor') {
+  const mod = await import(cmd === 'setup' ? './lib/setup.mjs' : './lib/doctor.mjs');
+  process.exit(await mod.run(argv.slice(1), KIT));
+}
+
 // A FLAG IS NOT A COMMAND. This checked `repo` for a leading '--' but not `cmd`, so
 // `kit.mjs --fleet-root DIR` parsed '--fleet-root' as the command and DIR as the repo,
 // then failed with a confusing 'no repo' naming the root twice. Found by test-kit.mjs.
 if (!cmd || cmd.startsWith('--') || !repo || repo.startsWith('--')) {
-  die('usage: kit.mjs <init|compose|apply|check> <repo> [--fleet-root DIR]', 2);
+  die(USAGE, 2);
 }
 
 // WHERE YOUR REPOS LIVE. An explicit --fleet-root always wins. Otherwise TRY, in order, the
@@ -60,22 +81,18 @@ if (!FLEET) {
 }
 
 const repoDir = join(FLEET, repo);
+// A WORKTREE IS SOMEONE ELSE'S LIVE WORK. Its .git is a FILE. Composing into one writes a
+// CLAUDE.md its main checkout never sees until merge — and a sibling worktree may belong to
+// another session that is mid-task. Write commands refuse; read-only ones are harmless.
+const dotGit = join(repoDir, '.git');
+if ((cmd === 'init' || cmd === 'apply') && existsSync(dotGit) && statSync(dotGit).isFile()) {
+  die(`REFUSING: ${repoDir} is a git WORKTREE (.git is a file). Run the kit against the main checkout.`, 1);
+}
 const claudeDir = join(repoDir, '.claude');
 const claudeMd = join(claudeDir, 'CLAUDE.md');
 const projectMd = join(claudeDir, 'CLAUDE.project.md');
 
-// ── block parsing ────────────────────────────────────────────────────────────────────────
-// A block is  <!-- KIT:<KIND>:BEGIN §N -->  ...  <!-- KIT:<KIND>:END §N -->
-// Returns Map<number, {kind, body}>. Body excludes the markers.
-function parseBlocks(text) {
-  const out = new Map();
-  const re = /<!--\s*KIT:(CORE|PROJECT):BEGIN\s*§(\d+)\s*-->\n([\s\S]*?)<!--\s*KIT:\1:END\s*§\2\s*-->/g;
-  let m;
-  while ((m = re.exec(text)) !== null) {
-    out.set(Number(m[2]), { kind: m[1], body: m[3].replace(/\s+$/, '') });
-  }
-  return out;
-}
+// Block parsing (CRLF-safe) lives in lib/blocks.mjs, shared with `setup`.
 
 const readIf = (p) => (existsSync(p) ? readFileSync(p, 'utf8') : null);
 const coreText = readIf(join(KIT, 'CLAUDE.core.md'));

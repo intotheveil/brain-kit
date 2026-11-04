@@ -52,6 +52,22 @@ jobs:
             echo "  OK  $f"
           done
 
+      - name: the tarball ships everything setup needs
+        run: |
+          # A `files` array is a promise: a template or agent left out works perfectly from this
+          # checkout and breaks `setup` for everyone who installs from npm.
+          npm pack --dry-run 2>&1 | tee pack.txt >/dev/null
+          miss=0
+          for f in kit.mjs lib/setup.mjs lib/doctor.mjs lib/blocks.mjs lib/term.mjs \
+                   templates/BRAIN.template.md templates/settings.template.json \
+                   hooks/guard.sh hooks/subagent-gate.sh \
+                   agents/builder.md agents/explore.md agents/planner.md agents/qa.md \
+                   agents/researcher.md agents/reviewer.md agents/test-writer.md; do
+            grep -q " $f\$" pack.txt && echo "  OK  $f" || { echo "::error::not in the tarball: $f"; miss=1; }
+          done
+          rm -f pack.txt
+          exit $miss
+
       - name: no private fleet references leaked
         run: |
           # The kit was extracted from a private fleet. Anything that reads like an internal

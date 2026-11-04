@@ -33,17 +33,24 @@ fi
 IMPL="$ROOT/node_modules/agent-brain-kit"
 # Shell-only: `node -p require(<abs path>)` is not portable here, because a POSIX temp path
 # (mktemp on Git Bash) is not a path the Windows node binary can resolve.
-V=$(grep -m1 '"version"' "$IMPL/package.json" | sed -E 's/.*"version"[[:space:]]*:[[:space:]]*"([^"]+)".*//')
+V=$(grep -m1 '"version"' "$IMPL/package.json" | sed -E 's/.*"version"[[:space:]]*:[[:space:]]*"([^"]+)".*/\1/')
 [ -n "$V" ] && ok "agent-brain-kit resolved at v$V" || bad "version read" "empty"
 
 hdr "2. the package SHIPPED what it promises"
 for f in kit.mjs CLAUDE.core.md BRAIN_DISCIPLINE.md README.md LICENSE \
          templates/BRAIN.template.md templates/CLAUDE.project.template.md \
-         sync-hooks.sh verify-kit.sh; do
+         templates/settings.template.json \
+         lib/blocks.mjs lib/setup.mjs lib/doctor.mjs lib/term.mjs \
+         sync-hooks.sh sync-agents.sh verify-kit.sh; do
   [ -f "$IMPL/$f" ] && ok "ships $f" || bad "ships $f" "missing from published tarball"
 done
 HOOKS=$(ls "$IMPL/hooks" 2>/dev/null | wc -l)
 [ "$HOOKS" -ge 7 ] && ok "ships $HOOKS hooks" || bad "hooks" "only $HOOKS found"
+MISSING_AGENTS=""
+for a in builder explore planner qa researcher reviewer test-writer; do
+  [ -f "$IMPL/agents/$a.md" ] || MISSING_AGENTS="$MISSING_AGENTS $a"
+done
+[ -z "$MISSING_AGENTS" ] && ok "ships the 7 crew agents" || bad "agents/" "missing:$MISSING_AGENTS"
 
 hdr "3. every shipped shell script is syntactically valid"
 BADSH=0
@@ -124,6 +131,39 @@ for A in claude-brain-kit "@alexadamis/brain-kit"; do
     bad "$A" "bin.mjs not installed"
   fi
 done
+
+hdr "12. setup installs everything into ONE repo, and a second run changes nothing"
+# Relative directory names, run from $ROOT: the command's own path handling is what is under
+# test, not whether a POSIX temp path survives the trip into a Windows node binary.
+cd "$ROOT" && mkdir -p one
+OUT=$(node "$IMPL/kit.mjs" setup one 2>&1)
+echo "$OUT" | grep -q "created" && ok "setup ran" || bad "setup" "$OUT"
+[ -f one/BRAIN.md ] && ok "setup wrote BRAIN.md" || bad "setup BRAIN.md" "missing"
+grep -q "READ FIRST" one/.claude/CLAUDE.md 2>/dev/null && ok "setup's CLAUDE.md carries the brain loop" || bad "setup CLAUDE.md" "no loop"
+N=$(ls one/.claude/agents 2>/dev/null | wc -l)
+[ "$N" -eq 7 ] && ok "setup installed the 7 agents" || bad "setup agents" "$N"
+N=$(ls one/.claude/hooks 2>/dev/null | wc -l)
+[ "$N" -ge 7 ] && ok "setup installed $N hooks" || bad "setup hooks" "$N"
+grep -q "subagent-gate.sh" one/.claude/settings.json 2>/dev/null && ok "settings.json wires the hooks" || bad "settings.json" "gate not wired"
+BEFORE=$(cd one && find . -type f -exec md5sum {} + | sort)
+OUT=$(node "$IMPL/kit.mjs" setup one 2>&1)
+AFTER=$(cd one && find . -type f -exec md5sum {} + | sort)
+echo "$OUT" | grep -q "0 created" && [ "$BEFORE" = "$AFTER" ] && ok "second setup created and changed nothing" || bad "idempotence" "$OUT"
+mkdir -p dry
+node "$IMPL/kit.mjs" setup dry --dry-run >/dev/null 2>&1
+[ -z "$(ls -A dry)" ] && ok "setup --dry-run wrote nothing" || bad "dry run" "$(ls -A dry)"
+
+hdr "13. doctor grades a brain, and refuses to pass an empty one"
+OUT=$(node "$IMPL/kit.mjs" doctor one 2>&1); RC=$?
+echo "$OUT" | grep -qE "[0-9]+/100" && ok "doctor printed a score" || bad "doctor" "$OUT"
+[ "$RC" -eq 1 ] && ok "a template-only brain does NOT pass (exit 1)" || bad "doctor template" "exit $RC"
+JSON=$(node "$IMPL/kit.mjs" doctor one --json 2>/dev/null)
+echo "$JSON" | grep -q '"score"' && echo "$JSON" | grep -q '"checks"' && ok "doctor --json is machine-readable" || bad "doctor --json" "$JSON"
+mkdir -p empty
+node "$IMPL/kit.mjs" doctor empty >/dev/null 2>&1; RC=$?
+[ "$RC" -eq 1 ] && ok "no BRAIN.md exits 1" || bad "doctor missing brain" "exit $RC"
+OUT=$(node "$ROOT/node_modules/claude-brain-kit/bin.mjs" doctor one 2>&1)
+echo "$OUT" | grep -qE "[0-9]+/100" && ok "an alias runs doctor too" || bad "alias doctor" "$OUT"
 
 hdr "RESULT"
 echo "  PASS=$PASS  FAIL=$FAIL  SKIP=$SKIP"
