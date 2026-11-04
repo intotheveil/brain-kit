@@ -15,23 +15,34 @@
 #      raw bytes reports drift that does not exist. (Learned the hard way — the
 #      first pass of this audit misread one repo as a total fork.)
 #
+#   3. SECTION TITLES. CHECK 1 covers the sections agents cite by NUMBER. But builder.md
+#      reaches §2 and §8 by WORD — "the stack and conventions in CLAUDE.md", "see CLAUDE.md
+#      commands" — and §8 is the one the SubagentStop gate's checks mirror. Retitle either and
+#      nothing errors: the agent stops finding what it was sent for and improvises, exactly
+#      as it did for a missing §6. Numbers were a contract; titles were not, and are now.
+#
 # Verdicts are three-valued, never two: PASS / FAIL / INCONCLUSIVE. "Could not
 # check" must never collapse into either pass or fail.
 #
 # Usage: verify-kit.sh [fleet-root]      (default: the parent of this kit checkout)
+#
+# WHICH REPOS: git checkouts under fleet-root with .claude/agents — minus worktrees (another
+# session's live work) and repos carrying .claude/.no-crew-hooks (the same opt-out the sync
+# scripts honour; verifying a repo that was deliberately skipped reports drift nobody wanted).
 set -uo pipefail
 
 ROOT="${1:-$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)}"
 KIT_FILES_HOOKS="_json.sh brain-check.sh format.sh guard.sh notify.sh secret-scan.sh subagent-gate.sh"
-KIT_FILES_AGENTS="builder.md explore.md planner.md qa.md reviewer.md test-writer.md"
+KIT_FILES_AGENTS="builder.md explore.md planner.md qa.md researcher.md reviewer.md test-writer.md"
 
 hash_norm() { tr -d '\r' < "$1" 2>/dev/null | md5sum | cut -c1-8; }
 
 repos=()
 for d in "$ROOT"/*/; do
   r="$(basename "$d")"
-  [ -d "$d/.git" ] || continue
+  [ -d "$d/.git" ] || continue          # a worktree's .git is a FILE: skipped here
   [ -d "$d/.claude/agents" ] || continue
+  [ -f "$d/.claude/.no-crew-hooks" ] && continue
   repos+=("$r")
 done
 
@@ -49,9 +60,19 @@ for r in "${repos[@]}"; do
   if [ -z "$cm" ]; then
     printf "  %-18s INCONCLUSIVE  (agents present, no CLAUDE.md to check against)\n" "$r"; incon=$((incon+1)); continue
   fi
-  refs="$(grep -oh '§[0-9]\+' "$ROOT/$r"/.claude/agents/*.md 2>/dev/null | tr -d '§' | sort -un)"
+  # "BRAIN.md §5" is a reference into the BRAIN, which has its own numbering; only the rest
+  # are citations of CLAUDE.md. Counting both would fail every repo whose agents cite the brain.
+  refs="$(grep -oh '\(BRAIN\.md \)\?§[0-9]\+' "$ROOT/$r"/.claude/agents/*.md 2>/dev/null | grep -v '^BRAIN' | tr -d '§' | sort -un)"
   if [ -z "$refs" ]; then
     printf "  %-18s PASS          (no section references)\n" "$r"; continue
+  fi
+  # A MINIMAL constitution (the brain loop only, as `setup` writes it without --full) has no
+  # numbered sections past §0. The shipped agents carry a default rubric and arc for exactly
+  # that case and say so, so absent §6/§9 there is the documented fallback, not a broken
+  # contract. Any OTHER numbered section present means the repo claims a constitution, and
+  # then every cited number must resolve.
+  if ! tr -d '\r' < "$cm" | grep -qE '^#+ +[1-9][0-9]*\.'; then
+    printf "  %-18s PASS          (minimal constitution — agents use their built-in rubric and arc)\n" "$r"; continue
   fi
   missing=""
   for n in $refs; do
@@ -98,6 +119,42 @@ for sub in hooks agents; do
       printf "  %-18s   %-8s :%s\n" "" "$h" "$out"
     done
   done
+done
+
+echo
+echo "=============================================================="
+echo " CHECK 3 — sections agents reach by TITLE still carry it"
+echo "=============================================================="
+# section-number|expected title prefix|who depends on it
+TITLE_CONTRACT="2|Stack|builder.md ('the stack and conventions in CLAUDE.md')
+8|Commands|builder.md ('see CLAUDE.md commands') + qa.md"
+for r in "${repos[@]}"; do
+  md="$ROOT/$r/.claude/CLAUDE.md"
+  if [ ! -f "$md" ]; then
+    printf "  %-18s INCONCLUSIVE  (no .claude/CLAUDE.md)\n" "$r"; incon=$((incon+1)); continue
+  fi
+  if ! tr -d '\r' < "$md" | grep -qE '^#+ +[1-9][0-9]*\.'; then
+    printf "  %-18s PASS          (minimal constitution — no numbered §2/§8 to hold a title)\n" "$r"; continue
+  fi
+  bad=""
+  while IFS='|' read -r num want who; do
+    [ -z "$num" ] && continue
+    line="$(tr -d '\r' < "$md" | grep -m1 -E "^## ${num}\. ")"
+    if [ -z "$line" ]; then
+      bad="$bad §${num}(absent)"
+    else
+      title="${line#\#\# ${num}. }"
+      case "$title" in
+        "$want"*) ;;
+        *) bad="$bad §${num}(is '${title%% (*}', want '${want}')";;
+      esac
+    fi
+  done <<< "$TITLE_CONTRACT"
+  if [ -n "$bad" ]; then
+    printf "  %-18s FAIL         %s\n" "$r" "$bad"; fail=$((fail+1))
+  else
+    printf "  %-18s PASS\n" "$r"
+  fi
 done
 
 echo
