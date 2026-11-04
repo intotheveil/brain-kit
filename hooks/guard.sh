@@ -69,6 +69,27 @@ if [ -n "$CMD" ]; then
   if echo "$CMD" | grep -Eiq '(cat|less|head|tail|curl|wget)[^|;&]*\.env($|[^.a-zA-Z])'; then
     block "reading a .env via shell. Read config from process env instead."
   fi
+  # POWERSHELL. The PowerShell tool's payload carries its script in tool_input.command — the same
+  # field as Bash — so every rule above already applies to it (git push --force, reset --hard,
+  # DROP TABLE, `cat .env` via the alias). What it does NOT share is the cmdlet vocabulary: agents
+  # on Windows use the PowerShell tool, and until 2026-09-27 the settings matcher did not even
+  # send it here. These are the PowerShell spellings of the two shell rules that are word-bound.
+  #   reading a .env: Get-Content / gc / type / Select-String / sls
+  if echo "$CMD" | grep -Eiq '(^|[^a-z0-9_-])(get-content|gc|type|select-string|sls)[[:space:]][^|;&]*\.env($|[^.a-zA-Z])'; then
+    block "reading a .env via PowerShell. Read config from process env instead."
+  fi
+  #   recursive force-delete of a root / home / cwd path: Remove-Item (or its aliases) with a
+  #   -Recurse and a -Force parameter (any unambiguous prefix, any order) and such a target.
+  #   Checked per statement, so a harmless `Remove-Item -Recurse -Force .\dist` stays allowed.
+  while IFS= read -r seg; do
+    s=" $(printf '%s' "$seg" | tr 'A-Z' 'a-z' | tr -d "\"'") "
+    case "$s" in *" remove-item "*|*" ri "*|*" rm "*|*" del "*|*" rd "*|*" rmdir "*|*" erase "*) ;; *) continue ;; esac
+    printf '%s' "$s" | grep -Eq '[[:space:]]-r(e|ec|ecu|ecur|ecurs|ecurse)?[[:space:]]' || continue
+    printf '%s' "$s" | grep -Eq '[[:space:]]-fo(r|rc|rce)?[[:space:]]' || continue
+    if printf '%s' "$s" | grep -Eq '[[:space:]](-path[[:space:]]+|-literalpath[[:space:]]+)?([a-z]:[\/]?|[\/]|~[\/]?|\$home[\/]?|\$env:userprofile[\/]?|\.[\/]?|\*)[[:space:]]'; then
+      block "recursive force-delete of a root/home/cwd path (PowerShell). If intended, a human must run it."
+    fi
+  done <<< "$(printf '%s' "$CMD" | tr ';|&' '\n\n\n')"
   # Client-data scan: never commit raw client data or client identifiers (names/vendors/amounts).
   # Enforced here so a manual pre-push grep can't be forgotten (learned twice). Redact/synthesize.
   # Scans the whole would-be-committed content — `git diff HEAD` ADDED lines (staged AND unstaged, so
@@ -76,14 +97,30 @@ if [ -n "$CMD" ]; then
   # Only added/new content is scanned, so a REDACTION commit (removing a leaked value) is never blocked.
   if echo "$CMD" | grep -Eq 'git[[:space:]]+commit'; then
     ROOT="${CLAUDE_PROJECT_DIR:-$(git rev-parse --show-toplevel 2>/dev/null || echo .)}"
-    ADDED="$(git -C "$ROOT" diff HEAD 2>/dev/null | grep -E '^\+' || true)"
-    for f in $(git -C "$ROOT" ls-files --others --exclude-standard 2>/dev/null || true); do
+    # BINARIES ARE NOT CLIENT TEXT, and their bytes can spell anything: a .glb matched the Greek
+    # range by accident (a game repo, 2026-09-27). Tracked: numstat's `-<TAB>-` rows are what git itself
+    # holds as binary; they are excluded by pathspec, because a textconv driver would otherwise
+    # render one into the diff as text. Untracked: `grep -I` in the C locale — a NUL test, git's.
+    BIN_EXCL=()
+    while IFS=$'\t' read -r -d '' nadd ndel npath; do
+      [ "$nadd" = - ] && [ "$ndel" = - ] && BIN_EXCL+=(":(exclude,literal)$npath")
+    done < <(git -C "$ROOT" diff HEAD --numstat -z --no-renames 2>/dev/null || true)
+    # `grep -a` IS LOAD-BEARING. Without it, ONE NUL anywhere in the diff text (a textconv'd
+    # binary, or a file whose first NUL sits past git's 8000-byte sniff) makes grep print
+    # "Binary file (standard input) matches" INSTEAD of the lines — every added line of every
+    # file in the commit vanished and the Greek and denylist rules passed on nothing. Found by
+    # RED-verifying the binary skip, 2026-09-27. NULs are dropped so bash does not warn on them.
+    ADDED="$(git -C "$ROOT" diff HEAD -- . ${BIN_EXCL[@]+"${BIN_EXCL[@]}"} 2>/dev/null | grep -aE '^\+' | tr -d '\000' || true)"
+    while IFS= read -r -d '' f; do
+      LC_ALL=C grep -Iq '' "$ROOT/$f" 2>/dev/null || continue   # binary (or empty): skip
       ADDED="$ADDED
 $(cat "$ROOT/$f" 2>/dev/null || true)"
-    done
+    done < <(git -C "$ROOT" ls-files --others --exclude-standard -z 2>/dev/null || true)
     if [ -n "$ADDED" ]; then
-      # (a) Greek script = almost certainly raw client data in this English repo.
-      if printf '%s' "$ADDED" | grep -Pq '[\x{0370}-\x{03FF}]' 2>/dev/null; then
+      # (a) Greek script = almost certainly raw client data in this English repo — UNLESS the repo
+      # ships Greek on purpose (a game's el locale: one repo has 169 such files). `.claude/.no-greek-scan`
+      # turns off (a) ONLY; the denylist (b) still runs. Commit the marker with an ADR saying why.
+      if [ ! -f "$ROOT/.claude/.no-greek-scan" ] && printf '%s' "$ADDED" | grep -Pq '[\x{0370}-\x{03FF}]' 2>/dev/null; then
         block "client-data scan: Greek characters in the diff — looks like raw client data. Redact/synthesize before committing."
       fi
       # (b) denylist of known client identifiers (gitignored, local-only; regex per line).

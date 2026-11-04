@@ -14,7 +14,7 @@
 
      TITLES ARE A CONTRACT TOO, in one place: builder.md binds §2 and §8 BY NAME, not number
      ("the stack and conventions in CLAUDE.md", "see CLAUDE.md commands"). Renumbering cannot
-     break those; RETITLING §2 or §8 can, and verify-kit.sh will not notice.
+     break those; RETITLING §2 or §8 can, and verify-kit.sh check 3 now catches it.
 
      NUMBERING NAMESPACES. This file is CLAUDE.md. BRAIN.md has its OWN §1-§8, and §0/§10 below
      refer to it constantly. Every such reference is written "BRAIN.md §N" in full — a bare "§6"
@@ -103,7 +103,8 @@ decomposes a spec into tasks and delegates to the subagents in `.claude/agents/`
 **One writer per checkout.** Code-producing agents running in parallel each get their own git
 worktree (`isolation: worktree` on the dispatch, or in the agent's frontmatter); in a shared
 checkout they run one at a time. Two builders in one tree share one index and one suite — each
-one's half-done change turns the other's gate red.
+one's half-done change turns the other's gate red. The SubagentStop gate holds a per-worktree
+lock and fails fast, naming this rule, when a second gate starts in the same checkout.
 **Phase gate (before a phase is claimed):** qa (VALIDATED) → reviewer (PASS) → CHECKPOINT.
 qa and reviewer are DIFFERENT agents than the builder — no self-certification. A phase is
 never claimed until qa proves it works AND reviewer judges it good AND hooks pass. QA failure
@@ -199,8 +200,8 @@ records it as a declared exception rather than overwriting it on sync.
 <!-- KIT:CORE:BEGIN §10 -->
 ## 10. Telemetry fix ledger (fleet standard — close the loop on every production error)
 
-Fleet-telemetry errors from the DEPLOYED app land on the Zeus dashboard grouped by **`fingerprint`**
-(a stable hash of product + message + top stack frame). This is the brain discipline applied to
+Production errors from the DEPLOYED app land in your error tracker grouped by a stable **`fingerprint`**
+(e.g. a hash of product + message + top stack frame). This is the brain discipline applied to
 production errors — investigate a fingerprint once, record the close-out, never re-triage it:
 
 - **When you fix a telemetry-surfaced error**, record it in **`BRAIN.md` §8 TELEMETRY FIX LEDGER**
