@@ -20,7 +20,7 @@ npx agent-brain-kit setup
 
 <br>
 
-<img src="docs/assets/demo.svg" alt="The same request in two terminals. Without a brain, the agent explores 41 files and repeats a mistake the team made in March. With brain-kit, it reads the gotcha in BRAIN.md, plans a backoff instead, qa sends it back once because a test never ran, then it passes review and the brain is written for the next session." width="900">
+<img src="https://raw.githubusercontent.com/intotheveil/brain-kit/main/docs/assets/demo.gif" alt="The same request in two terminals. Without a brain, the agent explores 41 files and repeats a mistake the team made in March. With brain-kit, it reads the gotcha in BRAIN.md, plans a backoff instead, qa sends it back once because a test never ran, then it passes review and the brain is written for the next session." width="900">
 
 </div>
 

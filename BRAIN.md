@@ -160,6 +160,15 @@ a stranger in one command.
 
 ## 6. CHANGELOG
 
+### 2026-11-05 — demo GIF in the README
+- `docs/assets/demo.gif` (dark, 900×372, 10 fps, 18 s loop, 118 KB) rendered from `demo.svg` by
+  `scripts/render-demo-gif.cjs` + ffmpeg (two-pass palette); for X/launch posts and the README hero.
+- README hero now points at the GIF by ABSOLUTE raw.githubusercontent URL: npmjs.com does not
+  render the repo-relative SVG, and the 0.2.0 tarball's README is frozen at publish time.
+  Re-run the script after any change to `scripts/gen-demo-svg.py`, or the GIF goes stale.
+- Frame capture: pause every `document.getAnimations()` and set `currentTime` per frame —
+  deterministic (two runs gave byte-identical frames), no real-time waiting.
+
 ### 2026-11-05 — 0.2.0: the crew ships, setup + doctor, receipts, a site
 
 - **Operator ask:** make the public kit "memorable and WOW", no mythology branding ("some people are
