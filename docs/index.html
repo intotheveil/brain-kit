@@ -1,0 +1,261 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>brain-kit — memory and a crew for coding agents</title>
+<meta name="description" content="Your coding agent forgets everything between sessions. brain-kit gives it one file it reads first and writes last, and a crew where no agent grades its own homework.">
+<meta property="og:title" content="brain-kit — your agent forgets. Make it stop.">
+<meta property="og:description" content="A BRAIN.md read before every session and written after, a seven-agent crew with independent QA and review, and hooks that enforce both. MIT. One command.">
+<meta name="theme-color" content="#7c3aed">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#ffffff; --bg2:#f6f5fb; --ink:#0f172a; --mute:#5b6478; --line:#e4e2ee; --card:#ffffff;
+  --brand:#7c3aed; --brand2:#a855f7; --brand-soft:#efe9ff; --gate:#dc2626; --ok:#059669;
+  --term:#0d1117; --term-ink:#e6edf3; --shadow:0 1px 2px rgba(15,23,42,.06),0 8px 30px rgba(76,29,149,.08);
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#0b0d12; --bg2:#11131b; --ink:#e8eaf2; --mute:#9aa3b5; --line:#232634; --card:#141722;
+    --brand:#a78bfa; --brand2:#c084fc; --brand-soft:#221a3d; --gate:#f87171; --ok:#34d399;
+    --term:#05070b; --shadow:0 1px 2px rgba(0,0,0,.4),0 10px 40px rgba(0,0,0,.35);
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#0b0d12; --bg2:#11131b; --ink:#e8eaf2; --mute:#9aa3b5; --line:#232634; --card:#141722;
+  --brand:#a78bfa; --brand2:#c084fc; --brand-soft:#221a3d; --gate:#f87171; --ok:#34d399;
+  --term:#05070b; --shadow:0 1px 2px rgba(0,0,0,.4),0 10px 40px rgba(0,0,0,.35);
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.6 Inter,ui-sans-serif,system-ui,-apple-system,"Segoe UI",sans-serif;-webkit-font-smoothing:antialiased}
+a{color:var(--brand);text-decoration:none} a:hover{text-decoration:underline}
+code,.mono{font-family:"JetBrains Mono",ui-monospace,Menlo,Consolas,monospace}
+.wrap{max-width:1080px;margin:0 auto;padding:0 16px}
+nav{display:flex;align-items:center;justify-content:space-between;padding:18px 0}
+.logo{font-weight:800;letter-spacing:-.02em;font-size:18px;color:var(--ink)}
+.logo span{color:var(--brand)}
+nav .links{display:flex;gap:18px;font-size:14px;font-weight:500}
+nav .links a{color:var(--mute)}
+@media (max-width:640px){nav .links .hide-sm{display:none}}
+
+.hero{position:relative;padding:56px 0 40px;text-align:center;overflow:hidden}
+.hero:before{content:"";position:absolute;inset:-40% -10% auto;height:520px;background:radial-gradient(closest-side,var(--brand-soft),transparent);z-index:-1}
+.eyebrow{display:inline-block;font-size:13px;font-weight:600;color:var(--brand);background:var(--brand-soft);padding:6px 12px;border-radius:999px;margin-bottom:22px}
+h1{font-size:clamp(36px,6.5vw,68px);line-height:1.04;letter-spacing:-.035em;margin:0 0 20px;font-weight:800}
+h1 em{font-style:normal;background:linear-gradient(90deg,var(--brand),var(--brand2));-webkit-background-clip:text;background-clip:text;color:transparent}
+.lede{font-size:clamp(17px,2.2vw,20px);color:var(--mute);max-width:680px;margin:0 auto 30px}
+.install{display:inline-flex;align-items:center;gap:12px;background:var(--term);color:var(--term-ink);border-radius:12px;padding:12px 12px 12px 18px;font-size:15px;box-shadow:var(--shadow);max-width:100%}
+.install code{white-space:nowrap;overflow:auto}
+.install .p{color:#7ee787}
+.copy{border:0;background:#30363d;color:#e6edf3;font:600 13px Inter,sans-serif;padding:8px 12px;border-radius:8px;cursor:pointer}
+.copy:hover{background:#3d444d}
+.cta{margin-top:18px;display:flex;gap:14px;justify-content:center;flex-wrap:wrap;font-weight:600;font-size:15px}
+.btn{padding:10px 18px;border-radius:10px;border:1px solid var(--line);color:var(--ink);background:var(--card)}
+.btn.primary{background:var(--brand);border-color:var(--brand);color:#fff}
+.btn:hover{text-decoration:none;transform:translateY(-1px)}
+
+section{padding:64px 0}
+section.alt{background:var(--bg2);border-top:1px solid var(--line);border-bottom:1px solid var(--line)}
+h2{font-size:clamp(28px,4vw,40px);letter-spacing:-.025em;line-height:1.1;margin:0 0 12px;font-weight:800}
+.sub{color:var(--mute);font-size:18px;max-width:720px;margin:0 0 32px}
+.figure{border-radius:16px;overflow:hidden;box-shadow:var(--shadow);border:1px solid var(--line);background:var(--card)}
+.figure img{display:block;width:100%;height:auto}
+
+.grid{display:grid;gap:16px}
+.g3{grid-template-columns:repeat(3,1fr)} .g4{grid-template-columns:repeat(4,1fr)} .g2{grid-template-columns:repeat(2,1fr)}
+@media (max-width:900px){.g4{grid-template-columns:repeat(2,1fr)} .g3{grid-template-columns:1fr 1fr}}
+@media (max-width:600px){.g3,.g2,.g4{grid-template-columns:1fr}}
+.card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:20px;box-shadow:var(--shadow)}
+.card h3{margin:0 0 6px;font-size:17px;letter-spacing:-.01em}
+.card p{margin:0;color:var(--mute);font-size:15px}
+.tag{display:inline-block;font:600 11px/1 "JetBrains Mono",monospace;text-transform:uppercase;letter-spacing:.06em;padding:5px 8px;border-radius:6px;margin-bottom:12px;background:var(--brand-soft);color:var(--brand)}
+.tag.gate{background:color-mix(in srgb,var(--gate) 14%,transparent);color:var(--gate)}
+.tag.ok{background:color-mix(in srgb,var(--ok) 14%,transparent);color:var(--ok)}
+
+.stat{text-align:left}
+.stat .n{font-size:clamp(34px,5vw,48px);font-weight:800;letter-spacing:-.03em;line-height:1;background:linear-gradient(90deg,var(--brand),var(--brand2));-webkit-background-clip:text;background-clip:text;color:transparent}
+.stat .l{margin-top:8px;font-weight:600}
+.stat .h{color:var(--mute);font-size:14px;margin-top:4px}
+
+.gotcha{position:relative}
+.gotcha .rule{margin-top:12px;padding-top:12px;border-top:1px dashed var(--line);font-size:14px;color:var(--ink)}
+.gotcha .rule b{color:var(--brand)}
+
+.term{background:var(--term);color:var(--term-ink);border-radius:14px;padding:20px 22px;font:13.5px/1.7 "JetBrains Mono",monospace;overflow:auto;box-shadow:var(--shadow);white-space:pre}
+.term .c{color:#79c0ff}.term .g{color:#3fb950}.term .r{color:#ff7b72}.term .y{color:#f0b72f}.term .m{color:#8b949e}.term .v{color:#c4b5fd}
+
+.steps{counter-reset:s;display:grid;gap:14px}
+.step{display:grid;grid-template-columns:44px 1fr;gap:14px;align-items:start}
+.step:before{counter-increment:s;content:counter(s);display:grid;place-items:center;width:44px;height:44px;border-radius:12px;background:var(--brand-soft);color:var(--brand);font-weight:800}
+.step h3{margin:6px 0 4px;font-size:17px}.step p{margin:0;color:var(--mute)}
+.step pre{margin:8px 0 0;background:var(--term);color:var(--term-ink);padding:10px 14px;border-radius:10px;overflow:auto;font-size:13.5px}
+
+footer{padding:48px 0;color:var(--mute);font-size:14px;text-align:center}
+.quote{font-size:clamp(20px,3vw,28px);font-weight:700;letter-spacing:-.02em;line-height:1.3;max-width:820px;margin:0 auto;text-align:center}
+.quote span{color:var(--brand)}
+.reveal{opacity:0;transform:translateY(14px);transition:opacity .6s ease,transform .6s ease}
+.reveal.in{opacity:1;transform:none}
+@media (prefers-reduced-motion:reduce){.reveal{opacity:1;transform:none;transition:none}html{scroll-behavior:auto}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <nav>
+    <div class="logo">brain<span>-kit</span></div>
+    <div class="links">
+      <a href="#crew">Crew</a>
+      <a href="#receipts" class="hide-sm">Receipts</a>
+      <a href="#gotchas" class="hide-sm">Gotchas</a>
+      <a href="https://github.com/intotheveil/brain-kit">GitHub ★</a>
+    </div>
+  </nav>
+</div>
+
+<header class="hero">
+  <div class="wrap">
+    <div class="eyebrow">Open source · MIT · built for Claude Code, works with any agent</div>
+    <h1>Your coding agent forgets everything.<br><em>Make it stop.</em></h1>
+    <p class="lede">One file it reads first and writes last. A crew where no agent grades its own homework. Hooks that make both non-optional. Extracted from <b>a 53-repo fleet</b> where it has run every day for months.</p>
+    <div class="install"><code><span class="p">$</span> npx agent-brain-kit setup</code><button class="copy" data-copy="npx agent-brain-kit setup">Copy</button></div>
+    <div class="cta">
+      <a class="btn primary" href="https://github.com/intotheveil/brain-kit">Star on GitHub</a>
+      <a class="btn" href="#how">How it works</a>
+    </div>
+  </div>
+</header>
+
+<section id="how">
+  <div class="wrap">
+    <h2 class="reveal">The loop that stops the rot</h2>
+    <p class="sub reveal">Read the brain, do the work, write the brain. Step three is the one everybody skips, and skipping it is what makes step one worthless. brain-kit makes skipping it fail a hook.</p>
+    <div class="figure reveal"><img src="assets/loop.svg" alt="The session loop: read BRAIN.md, the crew works with independent qa and reviewer gates that can send work back to the builder, then write BRAIN.md so the next session starts warm." width="900" height="440"></div>
+  </div>
+</section>
+
+<section class="alt">
+  <div class="wrap">
+    <h2 class="reveal">Same request. Different memory.</h2>
+    <p class="sub reveal">The agent on the right is not smarter. The answer was written down once, it read the file, and the crew caught a test that never ran.</p>
+    <div class="figure reveal" style="background:transparent;border:0"><img src="assets/demo.svg" alt="Side by side terminals: without a brain the agent repeats a mistake from March; with brain-kit it reads the gotcha, plans a backoff, qa sends it back once, then it passes and the brain is written." width="900" height="372"></div>
+  </div>
+</section>
+
+<section id="crew">
+  <div class="wrap">
+    <h2 class="reveal">A crew that can't grade its own homework</h2>
+    <p class="sub reveal">Seven Claude Code subagents with one rule between them: the agent that wrote the code never certifies it. QA proves it runs. Review judges if it's good. Either one sends it back with the exact miss.</p>
+    <div class="grid g4">
+      <div class="card reveal"><span class="tag">read-only</span><h3>explore</h3><p>Maps the codebase before anyone plans. Never writes a file.</p></div>
+      <div class="card reveal"><span class="tag">plans</span><h3>planner</h3><p>Turns a spec into phased tasks, and appends a QA task and a Review task to every phase. Always.</p></div>
+      <div class="card reveal"><span class="tag">builds</span><h3>builder</h3><p>Implements exactly one scoped task. Out-of-scope writes are a review failure.</p></div>
+      <div class="card reveal"><span class="tag">tests</span><h3>test-writer</h3><p>Writes the tests the builder doesn't get to write for itself.</p></div>
+      <div class="card reveal"><span class="tag gate">gate</span><h3>qa</h3><p>Trusts nothing it didn't run. Re-runs every check from a clean state. Returns VALIDATED or the exact failures.</p></div>
+      <div class="card reveal"><span class="tag gate">gate</span><h3>reviewer</h3><p>Runs only after QA passes. Grades against a rubric. Below full marks anywhere means revise.</p></div>
+      <div class="card reveal"><span class="tag">sourced</span><h3>researcher</h3><p>Answers what the codebase can't with one sourced report. Never touches product code.</p></div>
+      <div class="card reveal"><span class="tag ok">enforced</span><h3>+ hooks</h3><p>Brain-check on session end, a gate that says what it skipped, secret scan, guard rails.</p></div>
+    </div>
+  </div>
+</section>
+
+<section id="receipts" class="alt">
+  <div class="wrap">
+    <h2 class="reveal">The receipts</h2>
+    <p class="sub reveal">Not a weekend demo. Counted from the private fleet this kit was extracted from — names removed, numbers not. <a href="https://github.com/intotheveil/brain-kit/blob/main/docs/receipts.md">How each number was counted →</a></p>
+    <div class="grid g4" id="stats">
+      <div class="card stat reveal"><div class="n">53</div><div class="l">repos running it</div><div class="h">product, infra, library and game repos</div></div>
+      <div class="card stat reveal"><div class="n">118</div><div class="l">days in daily use</div><div class="h">first BRAIN.md commit 2026-07-10</div></div>
+      <div class="card stat reveal"><div class="n">3,142</div><div class="l">commits that wrote a brain</div><div class="h">~1 in 3 of all commits</div></div>
+      <div class="card stat reveal"><div class="n">~2,600</div><div class="l">gotchas written down</div><div class="h">each one learned the hard way exactly once</div></div>
+      <div class="card stat reveal"><div class="n">57</div><div class="l">times QA failed “done” work</div><div class="h">the builder said finished; an independent run said no</div></div>
+      <div class="card stat reveal"><div class="n">296</div><div class="l">reviewer REVISE verdicts</div><div class="h">sent back with the exact rubric miss</div></div>
+      <div class="card stat reveal"><div class="n">~1,490</div><div class="l">sessions handed over</div><div class="h">by changelog, not by a lossy handover</div></div>
+      <div class="card stat reveal"><div class="n">8,098</div><div class="l">tests in the biggest repo</div><div class="h">its latest recorded full run</div></div>
+    </div>
+  </div>
+</section>
+
+<section id="gotchas">
+  <div class="wrap">
+    <h2 class="reveal">Hall of Gotchas</h2>
+    <p class="sub reveal">Every one of these was learned the hard way exactly once, then written into a brain so no session ever paid for it again. <a href="https://github.com/intotheveil/brain-kit/blob/main/docs/hall-of-gotchas.md">Read all of them →</a></p>
+    <div class="grid g3">
+      <div class="card gotcha reveal"><span class="tag">testing</span><h3>1,141 tests green. The CLI died on --help.</h3><p>A vault CLI passed typecheck, lint and every test, then crashed the first time anyone ran it: a value import from a workspace barrel that only real Node ESM rejects.</p><div class="rule"><b>Rule →</b> Running the real binary is part of the release check.</div></div>
+      <div class="card gotcha reveal"><span class="tag">agents</span><h3>The launcher passed both gates and launched nothing.</h3><p>QA and review signed off. The first real click opened a blank session: a list-valued CLI flag had swallowed the brief.</p><div class="rule"><b>Rule →</b> {ok: true} only proves the code returned. Exercise it and record what you saw.</div></div>
+      <div class="card gotcha reveal"><span class="tag">tooling</span><h3>| tail turned a failing suite into exit 0.</h3><p>“1 failed” printed right above “exited with code 0”. The exit code was tail’s, not the suite’s.</p><div class="rule"><b>Rule →</b> Gates check exit codes with pipefail. Never grep coloured output.</div></div>
+      <div class="card gotcha reveal"><span class="tag">data</span><h3>Split on <code>'\n'</code>, got nothing on CRLF.</h3><p>A markdown parser returned zero sections on a Windows-written file: a blank dashboard, not an error.</p><div class="rule"><b>Rule →</b> Tolerance belongs in the parser.</div></div>
+      <div class="card gotcha reveal"><span class="tag">tooling</span><h3>The migration CLI exits 0 when nothing ran.</h3><p>Misnamed migration files are skipped with a polite message and a clean exit. Four repos documented that as their migrate command.</p><div class="rule"><b>Rule →</b> A clean exit is never evidence. Check the catalogue.</div></div>
+      <div class="card gotcha reveal"><span class="tag">deploy</span><h3>The busiest brain vanished first.</h3><p>The GitHub contents API stops inlining files at 1 MB. The most active product’s brain crossed it and went “unavailable” every day.</p><div class="rule"><b>Rule →</b> Ask for the raw media type, and archive history out of the brain.</div></div>
+    </div>
+  </div>
+</section>
+
+<section class="alt">
+  <div class="wrap">
+    <h2 class="reveal">Is your brain healthy?</h2>
+    <p class="sub reveal"><code>doctor</code> grades any repo's brain in a second: sections, freshness, real gotchas, a "left off" pointer, size limits. Exit code included, so it can gate CI.</p>
+<div class="term reveal"><span class="c">$ npx agent-brain-kit doctor</span>   <span class="m"># run on this kit's own repo</span>
+
+  <span class="g">✔</span> 10/10  BRAIN.md exists (19.1 KB)
+  <span class="g">✔</span> 15/15  core sections §1–§7 all present
+  <span class="g">✔</span> 10/10  §1 What this is and §2 Architecture are filled in
+  <span class="g">✔</span> 10/10  last updated 2026-11-05 (today)
+  <span class="g">✔</span> 15/15  §5 GOTCHAS has 10 entries
+  <span class="g">✔</span> 10/10  §6 CHANGELOG has 3 entries
+  <span class="g">✔</span>  5/5   newest entry says where it left off
+  <span class="g">✔</span>  5/5   §4 OUTSTANDING table parses (10 rows, 6 columns)
+  <span class="g">✔</span> 15/15  .claude/CLAUDE.md carries the read-first / write-before-ending loop
+  <span class="g">✔</span>  5/5   size 19.1 KB (limit 1 MB)
+
+  <span class="v">████████████████████████</span>  <b>100/100</b>  <span class="g">excellent</span>
+
+<span class="m">and on a fresh template, a fix for every miss:</span>
+  <span class="r">✖</span>  0/15  §5 GOTCHAS has no real entry (template placeholders only)
+           <span class="y">→ record the first thing that cost you an hour</span>
+  <span class="v">██████████████</span><span class="m">░░░░░░░░░░</span>  <b>60/100</b>  <span class="y">needs work</span>  (pass mark 70)</div>
+  </div>
+</section>
+
+<section>
+  <div class="wrap">
+    <h2 class="reveal">Sixty seconds to a brain</h2>
+    <div class="steps">
+      <div class="step reveal"><div><h3>Install into any repo</h3><p>Creates <code>BRAIN.md</code>, the loop in <code>.claude/CLAUDE.md</code>, the crew and the hooks. Never overwrites a file you already have.</p><pre><code>npx agent-brain-kit setup</code></pre></div></div>
+      <div class="step reveal"><div><h3>Let the agent fill it</h3><p>Open Claude Code and ask it to fill BRAIN.md §1 and §2 from the codebase. From then on it maintains the rest itself.</p></div></div>
+      <div class="step reveal"><div><h3>Check it any time</h3><p>Score the brain and get a one-line fix for every miss.</p><pre><code>npx agent-brain-kit doctor</code></pre></div></div>
+    </div>
+  </div>
+</section>
+
+<section class="alt">
+  <div class="wrap">
+    <p class="quote reveal">"A brain that's updated <span>usually</span> is worse than useless — you can't trust it, so you re-investigate anyway. Read every time. Write every time."</p>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap">
+    <p><b>brain-kit</b> is free and MIT. <a href="https://github.com/intotheveil/brain-kit">GitHub</a> · <a href="https://www.npmjs.com/package/agent-brain-kit">npm</a> · <a href="https://ko-fi.com/alexdam">Say thanks</a></p>
+    <p>A discipline and some scripts, not a guarantee your agent will behave. It just makes forgetting expensive to get away with.</p>
+  </div>
+</footer>
+
+<script>
+document.querySelectorAll('.copy').forEach(function(b){
+  b.addEventListener('click',function(){
+    var t=b.getAttribute('data-copy');
+    try{navigator.clipboard.writeText(t).then(function(){b.textContent='Copied';setTimeout(function(){b.textContent='Copy'},1400)})}catch(e){}
+  });
+});
+(function(){
+  var els=document.querySelectorAll('.reveal');
+  if(!('IntersectionObserver' in window)){els.forEach(function(e){e.classList.add('in')});return}
+  var io=new IntersectionObserver(function(es){es.forEach(function(e){if(e.isIntersecting){e.target.classList.add('in');io.unobserve(e.target)}})},{threshold:.12});
+  els.forEach(function(e){io.observe(e)});
+})();
+</script>
+</body>
+</html>
