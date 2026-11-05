@@ -8,7 +8,7 @@
 > Yes, this repo keeps the discipline it ships. A kit that told you to keep a brain while keeping
 > none would be worth exactly what it cost you.
 
-**Last updated:** 2026-11-05 by Claude Code (Opus 5.5, Windows desktop) — **launch kit: in-browser doctor on the site (shared `lib/diagnose.mjs`), a REAL-run recording (60 → 85 from one real Claude session), og/social preview cards, 19 Hall of Gotchas cards. v0.2.0 GitHub release drafted, the operator runs it (L12).** Before that, same day: **0.2.0 built: the crew ships, `setup` + `doctor`, drift ported, receipts + Hall of Gotchas, animated README, GitHub Pages site in `docs/`. `agent-brain-kit` + `claude-brain-kit` 0.2.0 LIVE on npm, all three packages (verify-published 59/0, CI green).** Previously 2026-10-17 — core ported, README example, v0.1.0 release, r/ClaudeAI post made by the operator. Previously 2026-09-13 — **published.** Public on
+**Last updated:** 2026-11-05 by Claude Code (Opus 5.5, Windows desktop) — **launch kit: in-browser doctor on the site (shared `lib/diagnose.mjs`), a REAL-run recording (60 → 85 from one real Claude session), og/social preview cards, 19 Hall of Gotchas cards. v0.2.0 GitHub release published (tag at the npm gitHead).** Before that, same day: **0.2.0 built: the crew ships, `setup` + `doctor`, drift ported, receipts + Hall of Gotchas, animated README, GitHub Pages site in `docs/`. `agent-brain-kit` + `claude-brain-kit` 0.2.0 LIVE on npm, all three packages (verify-published 59/0, CI green).** Previously 2026-10-17 — core ported, README example, v0.1.0 release, r/ClaudeAI post made by the operator. Previously 2026-09-13 — **published.** Public on
 GitHub (MIT) and live on npm as three packages, verified from the registry by a 39-check harness.
 **Zero stars, zero users, hours old** — which is the honest state and also what blocks the curated
 lists (§4 L1).
@@ -96,8 +96,9 @@ a stranger in one command.
   `main` /docs, enabled by the operator 2026-11-05). Checked live: 200, no console errors, no
   horizontal scroll at 1280 and 390, both SVGs load. Every push to main redeploys it.
 - **🟢 Launch kit done:** in-browser doctor (`#doctor`), real-run video section, og:image + Twitter
-  card meta, 19 gotcha cards in `docs/cards/`. `test-kit.mjs` 31/0. The v0.2.0 GitHub release and the new
-  repo description/topics are drafted but NOT done: an agent may not create a public surface (L12).
+  card meta, 19 gotcha cards in `docs/cards/`. `test-kit.mjs` 31/0. v0.2.0 GitHub release live
+  (github.com/intotheveil/brain-kit/releases/tag/v0.2.0, run by the operator). Repo description/topics
+  still owed (L12).
 - **🟡 GitHub social preview NOT set:** there is no API for it. The operator uploads
   `docs/assets/social-preview.png` in repo Settings → General → Social preview (L11).
 - **⚪️ Few stars, few users.** It is what L1/L3 are for.
@@ -117,7 +118,7 @@ a stranger in one command.
 | L6  | 🔵 | idea | ~~No CI~~ — **CLOSED 2026-09-13.** `.github/workflows/verify.yml`, two jobs with different jobs to do: **`repo`** on every push/PR (every shell script parses, the 9 `kit.mjs` unit tests, manifests are valid JSON, no private fleet reference leaked) and **`published`** on a weekly schedule, which downloads all three packages from npm into a throwaway dir and ignores the working tree entirely. The scheduled half is the point — the repo can be healthy while the ARTIFACT is broken, which already happened here when `claude-brain-kit@0.1.0` shipped depending on a package that could never exist. Every step dry-run locally first, which is how the leak-scan was caught matching its own pattern. | closed | 2026-09-13 |
 | L9  | 🟡 | task | **Launch posts** for 0.2.0 (r/ClaudeCode, r/ClaudeAI follow-up, X), lead with the 57 QA failures and the Hall of Gotchas. Operator posts; nothing is posted by an agent. | open | 2026-11-05 |
 | L10 | 🔵 | idea | `setup` could add a `.gitattributes` line forcing LF on `.claude/hooks/*.sh` (CRLF breaks bash hooks on Windows checkouts with autocrlf). Also carry back upstream: verify-kit's "BRAIN.md §N is not a CLAUDE.md citation" filter and the generalized §10 wording. **Seen for real 2026-11-05:** committing a `setup`-installed repo on this machine (`core.autocrlf=true`) warned "LF will be replaced by CRLF" for every `.claude/hooks/*.sh`. | open | 2026-11-05 |
-| L12 | 🟡 | task | **v0.2.0 GitHub release + repo description/topics** (operator; refused to the agent as a public surface). `gh release create v0.2.0 --target d4b1dfdba4def0cc6ce68fc6cbfe31f3e1aebfe5 --title "v0.2.0 — the crew ships, setup + doctor" --notes-file <notes> --latest` (the target is npm's `gitHead` for 0.2.0), then `gh repo edit` with the new description and `--add-topic` for subagents, coding-agents, llm-memory, ai-coding. | open | 2026-11-05 |
+| L12 | 🔵 | task | **Repo description/topics** (operator; refused to the agent as a public surface): `gh repo edit` with a description that mentions the crew, plus `--add-topic` subagents, coding-agents, llm-memory, ai-coding. The v0.2.0 RELEASE part is done (operator, 2026-11-05; tag at d4b1dfd = npm gitHead). | open | 2026-11-05 |
 | L11 | 🟡 | task | **Upload the GitHub social preview:** repo Settings → General → Social preview → `docs/assets/social-preview.png`. No API exists, so only the operator can do it. Until then, links to the REPO show GitHub's default card (links to the SITE already use `og.png`). | open | 2026-11-05 |
 
 ---
@@ -216,7 +217,7 @@ a stranger in one command.
   public surface; the commands are in L12.
 - Resolved: `doctor` on this repo gave 95: the 2 previous changelog entries had no "Left off" line.
   It was right. This entry has one.
-- Left off: L12 (operator runs the release + description commands), L11 (operator uploads the
+- Left off: release DONE by the operator. L12 (description/topics command), L11 (operator uploads the
   social preview), then L9 launch posts. Nothing else is
   owed by an agent. Next agent work, if any: L10 `.gitattributes` for hooks.
 
