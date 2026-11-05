@@ -1,0 +1,15 @@
+
+brain-kit setup → ~/short-links
+
+  created  BRAIN.md
+  created  .claude/CLAUDE.md            brain loop
+  created  .claude/agents/              7 agents: builder, explore, planner, qa, researcher, reviewer, test-writer
+  created  .claude/hooks/               7 hooks: _json, brain-check, format, guard, notify, secret-scan, subagent-gate
+  created  .claude/settings.json        6 hooks wired
+
+  17 created · 0 kept · 0 merged
+
+Next:
+  1. Open Claude Code in this repo and ask it to "fill BRAIN.md §1–§2 from the codebase".
+  2. Check the brain's health any time: npx agent-brain-kit doctor
+

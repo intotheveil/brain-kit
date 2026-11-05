@@ -1,0 +1,14 @@
+I filled §1 and §2 of `BRAIN.md` from the source files. I only read the code and didn't run anything, so the `curl` example and the documented routes are untested.
+
+- **§1:** the project is a tiny in-memory URL shortener (v0.3.0). It covers what it does and what "working" means.
+- **§2:** it records the stack (Node ESM, zero dependencies, `node:http`, `node:test`) and the data model: one in-process `Map` of `code → {url, hits}`, with 6-character base62 codes. It also lists where each module lives, the three HTTP routes with their status codes, the commands (`npm start`, `npm test`, `PORT`), and a note that there are no external services.
+
+I also set the header lines to in-development, local repo with no remote, and not deployed. I added a changelog entry and updated "Last updated", as the constitution asks. §3 and §4 are still the template.
+
+I spotted a few weaknesses and listed them in the changelog's "left off" note, not as OUTSTANDING items:
+- Codes come from `Math.random()`, so they're guessable.
+- There's no body-size limit on `POST /shorten`.
+- `/<code>` accepts any HTTP method.
+- The server has no tests.
+
+I haven't committed anything.

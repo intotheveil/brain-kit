@@ -1,0 +1,21 @@
+
+brain doctor → ~/short-links
+
+  ✔ 10/10  BRAIN.md exists (5.0 KB)
+  ✔ 15/15  core sections §1–§7 all present
+  ✖  0/10  §1 and §2 still template placeholders (or empty)
+           → ask your agent: "read the codebase and fill BRAIN.md §1–§2" — that is what makes a cold session warm
+  ✔ 10/10  last updated 2026-11-05 (today)
+  ✖  0/15  §5 GOTCHAS has no real entry (template placeholders only)
+           → record the first thing that cost you an hour — the most valuable section, and the one that is normally lost
+  ✖  0/10  §6 CHANGELOG has no entries
+           → append a "### YYYY-MM-DD — what happened" entry at the end of every session
+  ✖  0/5   no newest changelog entry to carry a "left off" pointer
+           → end each entry with "Left off: <exact resume point>"
+  ✔  5/5   §4 OUTSTANDING table parses (3 rows, 6 columns)
+  ✔ 15/15  .claude/CLAUDE.md carries the read-first / write-before-ending loop
+  ✔  5/5   size 5.0 KB (limit 1 MB)
+  ·        crew: 7/7 agents in .claude/agents
+
+  ██████████████░░░░░░░░░░  60/100  needs work  (pass mark 70)
+

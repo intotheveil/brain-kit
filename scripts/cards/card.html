@@ -1,0 +1,90 @@
+<!doctype html>
+<!-- Share-card template. scripts/cards/render.cjs calls window.og(w,h) or window.gotcha(data, w, h)
+     and screenshots the viewport. Text is fitted by shrinking until nothing overflows. -->
+<html lang="en"><head><meta charset="utf-8"><title>card</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@500;600;700;800&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
+<style>
+  *{box-sizing:border-box} html,body{margin:0}
+  body{background:#0b0d12;color:#e8eaf2;font-family:Inter,"Segoe UI",sans-serif;-webkit-font-smoothing:antialiased}
+  .card{position:relative;overflow:hidden;display:flex;flex-direction:column;padding:64px 72px;background:
+    radial-gradient(900px 500px at 85% -10%,rgba(124,58,237,.35),transparent 60%),
+    radial-gradient(700px 420px at -10% 110%,rgba(168,85,247,.18),transparent 60%),#0b0d12}
+  .brand{font:800 26px Inter;letter-spacing:-.02em}.brand span{color:#a78bfa}
+  .top{display:flex;justify-content:space-between;align-items:center}
+  .pill{font:700 15px "JetBrains Mono",monospace;letter-spacing:.06em;text-transform:uppercase;color:#c4b5fd;background:#221a3d;border:1px solid #3b2f63;padding:8px 14px;border-radius:999px}
+  h1{font-weight:800;letter-spacing:-.035em;line-height:1.04;margin:0}
+  h1 em{font-style:normal;background:linear-gradient(90deg,#a78bfa,#c084fc);-webkit-background-clip:text;background-clip:text;color:transparent}
+  .mono{font-family:"JetBrains Mono",monospace}
+  .install{display:inline-flex;gap:14px;align-items:center;background:#05070b;border:1px solid #232634;border-radius:14px;padding:16px 22px;font:600 24px "JetBrains Mono",monospace}
+  .install .p{color:#7ee787}
+  .stats{display:flex;gap:44px}
+  .stat b{display:block;font-size:44px;font-weight:800;letter-spacing:-.03em;background:linear-gradient(90deg,#a78bfa,#c084fc);-webkit-background-clip:text;background-clip:text;color:transparent;line-height:1}
+  .stat span{display:block;margin-top:8px;color:#9aa3b5;font-size:18px;font-weight:600}
+  .story{color:#b7bfd0;font-weight:500}
+  .rule{border-top:2px dashed #2b2f40;padding-top:22px;font-weight:600}
+  .rule b{color:#a78bfa}
+  .foot{display:flex;justify-content:space-between;align-items:center;color:#9aa3b5;font:600 18px Inter}
+  .tags span{font:700 14px "JetBrains Mono",monospace;text-transform:uppercase;letter-spacing:.06em;color:#c4b5fd;background:#1a1530;padding:6px 10px;border-radius:6px;margin-right:8px}
+  .grow{flex:1;min-height:0;overflow:hidden;margin:18px 0;display:flex;flex-direction:column;justify-content:center;gap:26px}
+  code{font-family:"JetBrains Mono",monospace;font-size:.88em;color:#e6edf3;background:#1b1f2b;padding:.05em .3em;border-radius:6px}
+</style></head><body><div id="root"></div>
+<script>
+const esc = (s) => s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+// `code` and **bold** from the markdown source; nothing else is interpreted.
+const md = (s) => esc(s).replace(/`([^`]+)`/g, '<code>$1</code>').replace(/\*\*([^*]+)\*\*/g, '<b>$1</b>').replace(/\*([^*]+)\*/g, '$1');
+
+function fit(el, box, start, min) {
+  let size = start;
+  el.style.fontSize = size + 'px';
+  while (size > min && (box.scrollHeight > box.clientHeight + 1 || box.scrollWidth > box.clientWidth + 1)) {
+    size -= 1; el.style.fontSize = size + 'px';
+  }
+  return size;
+}
+
+window.og = function (w, h) {
+  document.getElementById('root').innerHTML = `
+  <div class="card" style="width:${w}px;height:${h}px">
+    <div class="top"><div class="brand">brain<span>-kit</span></div><div class="pill">open source · MIT</div></div>
+    <div class="grow" id="g">
+      <h1 id="t">Your coding agent forgets everything.<br><em>Make it stop.</em></h1>
+      <div class="story" style="font-size:24px;max-width:900px">One file every session reads first and writes last. A crew where no agent grades its own work.</div>
+      <div><span class="install"><span class="p">$</span>npx agent-brain-kit setup</span></div>
+    </div>
+    <div class="stats">
+      <div class="stat"><b>53</b><span>repos run on it</span></div>
+      <div class="stat"><b>3,142</b><span>brain commits</span></div>
+      <div class="stat"><b>~2,600</b><span>gotchas recorded</span></div>
+      <div class="stat"><b>57</b><span>false "done"s caught by qa</span></div>
+    </div>
+  </div>`;
+  fit(document.getElementById('t'), document.getElementById('g'), 76, 40);
+};
+
+window.gotcha = function (d, w, h) {
+  document.getElementById('root').innerHTML = `
+  <div class="card" style="width:${w}px;height:${h}px">
+    <div class="top"><div class="brand">brain<span>-kit</span> <span style="color:#9aa3b5;font-weight:600;font-size:20px">· Hall of Gotchas</span></div><div class="pill">#${d.n} of ${d.of}</div></div>
+    <div class="grow" id="g">
+      <h1 id="t" style="font-size:50px">${md(d.title)}</h1>
+      <div class="story" id="s">${md(d.story)}</div>
+      <div class="rule" id="r"><b>The rule it became →</b> ${md(d.rule)}</div>
+    </div>
+    <div class="foot"><div class="tags">${d.tags.map((t) => `<span>${esc(t)}</span>`).join('')}</div><div>Learned once. Written down. Never again.  ·  github.com/intotheveil/brain-kit</div></div>
+  </div>`;
+  const g = document.getElementById('g'), s = document.getElementById('s'), r = document.getElementById('r'), t = document.getElementById('t');
+  // Centred flex content overflows UPWARD, where scrollHeight cannot see it: measure the children.
+  const over = () => [...g.children].reduce((a, c) => a + c.offsetHeight, 0) + 26 * (g.children.length - 1) > g.clientHeight;
+  // 1) shrink body + rule together, but never below what reads on a phone;
+  // 2) then cut the story at a sentence boundary, marked "…" (the full text is one link away).
+  let size = 26;
+  const apply = () => { s.style.fontSize = size + 'px'; r.style.fontSize = size + 'px'; };
+  apply();
+  while (size > 21 && over()) { size--; apply(); }
+  const sentences = d.story.match(/[^.!?]+(?:[.!?](?=\s|$)|$)(?:["”’)]*)/g).map((x) => x.trim());
+  let keep = sentences.length, cut = false;
+  while (over() && keep > 1) { keep--; cut = true; s.innerHTML = md(sentences.slice(0, keep).join(' ')) + ' <span style="color:#a78bfa">…</span>'; }
+  if (over()) fit(t, g, 50, 36);
+  return { size, cut: cut ? `${keep}/${sentences.length} sentences` : '', overflow: over() };
+};
+</script></body></html>

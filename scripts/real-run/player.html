@@ -1,0 +1,118 @@
+<!doctype html>
+<!--
+  The real-run player. It draws a terminal replay of the raw files in ./captures, as a PURE
+  function of time: draw(ms) always yields the same frame. scripts/real-run/render.cjs loads this
+  page, hands it the captures, and screenshots draw(0), draw(100), … to make the GIF and MP4.
+
+  Nothing on screen is invented. Every output line comes verbatim from a capture. The only
+  liberties are: the claude session's 74 s are sped up (the line says so), its summary is
+  abridged to three of its own sentences (marked "…"), and the temp path reads ~/short-links.
+-->
+<html lang="en"><head><meta charset="utf-8"><title>real run</title>
+<style>
+  html,body{margin:0;background:#0b0d12}
+  .win{width:1000px;height:600px;background:#0d1117;border:1px solid #30363d;border-radius:12px;overflow:hidden;font:14px/1.55 "JetBrains Mono",Consolas,ui-monospace,monospace;color:#e6edf3;display:flex;flex-direction:column}
+  .bar{height:38px;background:#161b22;display:flex;align-items:center;gap:8px;padding:0 14px;flex:none}
+  .dot{width:12px;height:12px;border-radius:50%}
+  .ttl{flex:1;text-align:center;font:600 12.5px Inter,"Segoe UI",sans-serif;color:#8b949e;margin-right:52px}
+  .ttl b{color:#c4b5fd}
+  .scr{flex:1;padding:14px 20px;white-space:pre;overflow:hidden}
+  .foot{height:34px;flex:none;border-top:1px solid #21262d;display:flex;align-items:center;justify-content:space-between;padding:0 16px;font:600 12px Inter,"Segoe UI",sans-serif;color:#8b949e}
+  .foot .step b{color:#e6edf3}
+  .p{color:#7ee787}.c{color:#79c0ff}.g{color:#3fb950}.r{color:#ff7b72}.y{color:#d29922}.m{color:#8b949e}.v{color:#c4b5fd}.b{font-weight:700}
+  .cur{background:#e6edf3;color:#0d1117}
+</style></head><body>
+<div class="win">
+  <div class="bar"><span class="dot" style="background:#ff5f57"></span><span class="dot" style="background:#febc2e"></span><span class="dot" style="background:#28c840"></span>
+    <div class="ttl"><b>real run</b> · agent-brain-kit 0.2.0 · Claude Code (sonnet) · 2026-11-05 · real output, cut only where marked …</div></div>
+  <div class="scr" id="scr"></div>
+  <div class="foot"><span class="step" id="step"></span><span>github.com/intotheveil/brain-kit</span></div>
+</div>
+<script>
+const esc = (s) => s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+
+// Colour a captured output line the way the CLI colours it on a TTY (lib/term.mjs).
+function paint(l) {
+  let h = esc(l);
+  if (/^\s*✔/.test(l)) return h.replace('✔', '<span class="g">✔</span>').replace(/(\d+\/\d+)/, '<span class="m">$1</span>');
+  if (/^\s*✖/.test(l)) return h.replace('✖', '<span class="r">✖</span>').replace(/(\d+\/\d+)/, '<span class="m">$1</span>');
+  if (/^\s*→/.test(l)) return `<span class="m">${h}</span>`;
+  if (/^\s*·/.test(l)) return `<span class="m">${h}</span>`;
+  if (/█/.test(l)) {
+    const ok = /excellent|healthy/.test(l);
+    return h.replace(/(█+)/, `<span class="${ok ? 'g' : 'y'}">$1</span>`).replace(/(░+)/, '<span class="m">$1</span>')
+      .replace(/(\d+\/100)/, `<span class="b ${ok ? 'g' : 'y'}">$1</span>`).replace(/(healthy|excellent|needs work)/, `<span class="${ok ? 'g' : 'y'}">$1</span>`)
+      .replace(/(\(pass mark 70\))/, '<span class="m">$1</span>');
+  }
+  if (/^\s+created /.test(l)) return h.replace('created', '<span class="g">created</span>').replace(/(\s{2,})(\S.*)$/, (m, s, t) => /^(BRAIN|\.claude)/.test(t) ? m : `${s}<span class="m">${t}</span>`);
+  if (/^(brain doctor|brain-kit setup) →/.test(l)) return `<span class="b">${h.replace(' → ', '</span> <span class="m">→</span> ')}`;
+  if (/^#/.test(l)) return `<span class="v">${h}</span>`;
+  if (/^\s+\d+ created/.test(l)) return `<span class="b">${h}</span>`;
+  return h;
+}
+
+let STEPS = [], TOTAL = 0;
+// Build the timeline from the raw captures. Each scene clears the screen.
+function load(cap) {
+  const lines = (t) => t.replace(/\r\n?/g, '\n').replace(/\n+$/, '').split('\n');
+  const S = [];
+  const scene = (label) => S.push({ k: 'clear', label, ms: 0 });
+  const cmd = (text, after = 350) => S.push({ k: 'cmd', text, ms: text.length * 38 + after });
+  const out = (ls, each = 45) => ls.forEach((l) => S.push({ k: 'out', l, ms: l.trim() ? each : 20 }));
+  const wait = (ms) => S.push({ k: 'wait', ms });
+
+  scene('<b>1/4</b> a fresh repo with no brain → install');
+  cmd('ls'); out(['README.md  package.json  src  test']); wait(700);
+  cmd('npx agent-brain-kit setup'); out(lines(cap.setup)); wait(3200);
+
+  scene('<b>2/4</b> grade it: the template alone does not pass');
+  cmd('npx agent-brain-kit doctor'); out(lines(cap.before), 55); wait(4200);
+
+  scene('<b>3/4</b> one real Claude Code session, given only the prompt setup suggests');
+  cmd('claude -p "fill BRAIN.md §1–§2 from the codebase"');
+  S.push({ k: 'spin', ms: 2600, label: 'session running · 74 s, sped up' });
+  const sum = lines(cap.session);
+  // Whole sentences, verbatim, from the session's own summary; "…" marks what is skipped.
+  const sentence = (re) => (sum.join(' ').match(/[^.]*?(?:[^.\s]\.[^\s.]|[^.])*?\./g) || []).map((s) => s.trim()).find((s) => re.test(s)) || '';
+  out(['', ...wrap(sentence(/^I filled/), 100), '…', ...wrap(sentence(/changelog entry/), 100), ''], 90);
+  wait(900);
+  cmd('git diff --stat'); out(lines(cap.diff).slice(0, 2)); wait(600);
+  cmd('grep "Left off" BRAIN.md');
+  const lo = lines(cap.diff).find((l) => /^\+- Left off:/.test(l)).slice(1);
+  out(wrap(lo, 92), 70); out(['', '# §1–§2 filled, a changelog entry, a "left off" pointer, the date bumped:', '# the loop in .claude/CLAUDE.md asked for the last three. Nobody prompted them.'], 120);
+  wait(4400);
+
+  scene('<b>4/4</b> grade it again');
+  cmd('npx agent-brain-kit doctor'); out(lines(cap.after), 55); wait(900);
+  out(['', '# §5 GOTCHAS stays empty on purpose: a gotcha is earned, the first time something bites.'], 120);
+  wait(5200);
+
+  STEPS = S; TOTAL = S.reduce((a, s) => a + s.ms, 0);
+  return TOTAL;
+}
+function wrap(t, n) { const o = []; let cur = ''; for (const w of t.split(' ')) { if ((cur + ' ' + w).trim().length > n) { o.push(cur); cur = '  ' + w; } else cur = (cur ? cur + ' ' : '') + w; } if (cur) o.push(cur); return o; }
+
+const SPIN = '⠋⠙⠹⠸⠼⠴⠦⠧⠇⠏';
+function draw(ms) {
+  ms = ((ms % TOTAL) + TOTAL) % TOTAL;
+  let t = 0, screen = [], label = '', live = null, now = null;
+  for (const s of STEPS) {
+    if (t > ms) break;
+    const into = ms - t;
+    if (into < s.ms) now = s.k;
+    if (s.k === 'clear') { screen = []; label = s.label; }
+    else if (s.k === 'cmd') {
+      const typed = Math.min(s.text.length, Math.floor(into / 38));
+      const done = into >= s.ms;
+      screen.push(`<span class="p">❯</span> <span class="c">${esc(s.text.slice(0, typed))}</span>${done ? '' : '<span class="cur"> </span>'}`);
+    } else if (s.k === 'out') screen.push(paint(s.l));
+    else if (s.k === 'spin' && into < s.ms) live = `<span class="v">${SPIN[Math.floor(into / 80) % SPIN.length]}</span> <span class="m">${s.label} · ${Math.min(74, Math.round((into / s.ms) * 74))} s</span>`;
+    t += s.ms;
+  }
+  if (live) screen.push(live);
+  if (now === 'wait') screen.push('<span class="p">❯</span> <span class="cur"> </span>');
+  document.getElementById('scr').innerHTML = screen.join('\n');
+  document.getElementById('step').innerHTML = label;
+}
+window.load = load; window.draw = draw;
+</script></body></html>

@@ -252,3 +252,6 @@ and `latest` resolves correctly.
 Each of these entries started as a single line in a `§5 GOTCHAS` section, written by the session
 that got burned. That line is the whole mechanism: the next session reads it before it does
 anything, and does not get burned again.
+
+Every entry is also a ready-to-share image card (1200×675) in [`docs/cards/`](cards/), generated
+from this file by `scripts/cards/render.cjs`, so a card never says something this page does not.

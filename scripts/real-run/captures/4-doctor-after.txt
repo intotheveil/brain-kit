@@ -1,0 +1,18 @@
+
+brain doctor → ~/short-links
+
+  ✔ 10/10  BRAIN.md exists (6.9 KB)
+  ✔ 15/15  core sections §1–§7 all present
+  ✔ 10/10  §1 What this is and §2 Architecture are filled in
+  ✔ 10/10  last updated 2026-11-05 (today)
+  ✖  0/15  §5 GOTCHAS has no real entry (template placeholders only)
+           → record the first thing that cost you an hour — the most valuable section, and the one that is normally lost
+  ✔ 10/10  §6 CHANGELOG has 1 entry
+  ✔  5/5   newest entry (2026-11-05 — fill §1–§2) says where it left off
+  ✔  5/5   §4 OUTSTANDING table parses (3 rows, 6 columns)
+  ✔ 15/15  .claude/CLAUDE.md carries the read-first / write-before-ending loop
+  ✔  5/5   size 6.9 KB (limit 1 MB)
+  ·        crew: 7/7 agents in .claude/agents
+
+  ████████████████████░░░░  85/100  healthy
+

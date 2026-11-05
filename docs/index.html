@@ -8,6 +8,16 @@
 <meta name="description" content="Your coding agent forgets everything between sessions. brain-kit gives it one file it reads first and writes last, and a crew where no agent grades its own homework.">
 <meta property="og:title" content="brain-kit — your agent forgets. Make it stop.">
 <meta property="og:description" content="A BRAIN.md read before every session and written after, a seven-agent crew with independent QA and review, and hooks that enforce both. MIT. One command.">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://intotheveil.github.io/brain-kit/">
+<meta property="og:image" content="https://intotheveil.github.io/brain-kit/assets/og.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="brain-kit: Your coding agent forgets everything. Make it stop. npx agent-brain-kit setup. 53 repos, 3,142 brain commits, about 2,600 gotchas, 57 false dones caught by qa.">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="brain-kit — your agent forgets. Make it stop.">
+<meta name="twitter:description" content="A BRAIN.md read before every session and written after, a seven-agent crew with independent QA and review, and hooks that enforce both.">
+<meta name="twitter:image" content="https://intotheveil.github.io/brain-kit/assets/og.png">
 <meta name="theme-color" content="#7c3aed">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -95,6 +105,21 @@ h2{font-size:clamp(28px,4vw,40px);letter-spacing:-.025em;line-height:1.1;margin:
 .step h3{margin:6px 0 4px;font-size:17px}.step p{margin:0;color:var(--mute)}
 .step pre{margin:8px 0 0;background:var(--term);color:var(--term-ink);padding:10px 14px;border-radius:10px;overflow:auto;font-size:13.5px}
 
+.dr{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:20px;box-shadow:var(--shadow)}
+.dr-tabs{display:flex;gap:6px;margin-bottom:16px}
+.dr-tabs button{font:600 14px Inter,sans-serif;padding:8px 14px;border-radius:9px;border:1px solid var(--line);background:transparent;color:var(--mute);cursor:pointer}
+.dr-tabs button[aria-selected="true"]{background:var(--brand-soft);color:var(--brand);border-color:transparent}
+.dr-l{display:block;font-weight:600;font-size:14px;margin-bottom:6px}
+.dr-row{display:flex;gap:10px;flex-wrap:wrap}
+.dr-row input{flex:1;min-width:0;font:15px "JetBrains Mono",monospace;padding:11px 14px;border-radius:10px;border:1px solid var(--line);background:var(--bg);color:var(--ink)}
+.dr-row .btn{cursor:pointer;font:600 15px Inter,sans-serif}
+.dr textarea{width:100%;height:190px;resize:vertical;font:13px/1.5 "JetBrains Mono",monospace;padding:12px;border-radius:10px;border:1px solid var(--line);background:var(--bg);color:var(--ink)}
+.dr textarea.drag{border-color:var(--brand);outline:2px dashed var(--brand)}
+.dr-row input:focus,.dr textarea:focus{outline:2px solid var(--brand);outline-offset:1px}
+.dr-hint{color:var(--mute);font-size:14px;margin:10px 0 0}
+.dr-out{margin-top:16px;min-height:120px;white-space:pre;overflow-x:auto}
+@media (max-width:600px){.dr-out{font-size:12px;padding:16px}}
+.dr-actions{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-top:12px}
 footer{padding:48px 0;color:var(--mute);font-size:14px;text-align:center}
 .quote{font-size:clamp(20px,3vw,28px);font-weight:700;letter-spacing:-.02em;line-height:1.3;max-width:820px;margin:0 auto;text-align:center}
 .quote span{color:var(--brand)}
@@ -109,6 +134,7 @@ footer{padding:48px 0;color:var(--mute);font-size:14px;text-align:center}
     <div class="logo">brain<span>-kit</span></div>
     <div class="links">
       <a href="#crew">Crew</a>
+      <a href="#doctor">Doctor</a>
       <a href="#receipts" class="hide-sm">Receipts</a>
       <a href="#gotchas" class="hide-sm">Gotchas</a>
       <a href="https://github.com/intotheveil/brain-kit">GitHub ★</a>
@@ -142,6 +168,15 @@ footer{padding:48px 0;color:var(--mute);font-size:14px;text-align:center}
     <h2 class="reveal">Same request. Different memory.</h2>
     <p class="sub reveal">The agent on the right is not smarter. The answer was written down once, it read the file, and the crew caught a test that never ran.</p>
     <div class="figure reveal" style="background:transparent;border:0"><img src="assets/demo.svg" alt="Side by side terminals: without a brain the agent repeats a mistake from March; with brain-kit it reads the gotcha, plans a backoff, qa sends it back once, then it passes and the brain is written." width="900" height="372"></div>
+  </div>
+</section>
+
+<section id="real">
+  <div class="wrap">
+    <h2 class="reveal">That was an illustration. This is a real run.</h2>
+    <p class="sub reveal">A small sample repo, the published package, and one real Claude Code session given only the prompt <code>setup</code> suggests. The session also wrote a changelog entry, a "left off" pointer and a new date without being asked, because the loop told it to. 60 → 85. §5 stays empty until something bites.</p>
+    <div class="figure reveal" style="background:#0d1117;border-color:#30363d"><video src="assets/real-run.mp4" poster="assets/real-run-poster.png" width="1000" height="600" autoplay muted loop playsinline preload="metadata" aria-label="Real terminal recording: ls; npx agent-brain-kit setup creates 17 files; doctor scores 60 of 100; claude -p fills BRAIN.md sections 1 and 2 and on its own adds a changelog entry with a left-off pointer; doctor scores 85 of 100, with only the gotchas section left empty." style="display:block;width:100%;height:auto"></video></div>
+    <p class="reveal" style="color:var(--mute);font-size:14px;margin-top:12px">Every line is the command's real output, from these <a href="https://github.com/intotheveil/brain-kit/tree/main/scripts/real-run/captures">raw captures</a>. The 74-second session is sped up and its summary cut to two of its own sentences.</p>
   </div>
 </section>
 
@@ -194,29 +229,30 @@ footer{padding:48px 0;color:var(--mute);font-size:14px;text-align:center}
   </div>
 </section>
 
-<section class="alt">
+<section class="alt" id="doctor">
   <div class="wrap">
-    <h2 class="reveal">Is your brain healthy?</h2>
-    <p class="sub reveal"><code>doctor</code> grades any repo's brain in a second: sections, freshness, real gotchas, a "left off" pointer, size limits. Exit code included, so it can gate CI.</p>
-<div class="term reveal"><span class="c">$ npx agent-brain-kit doctor</span>   <span class="m"># run on this kit's own repo</span>
-
-  <span class="g">✔</span> 10/10  BRAIN.md exists (19.1 KB)
-  <span class="g">✔</span> 15/15  core sections §1–§7 all present
-  <span class="g">✔</span> 10/10  §1 What this is and §2 Architecture are filled in
-  <span class="g">✔</span> 10/10  last updated 2026-11-05 (today)
-  <span class="g">✔</span> 15/15  §5 GOTCHAS has 10 entries
-  <span class="g">✔</span> 10/10  §6 CHANGELOG has 3 entries
-  <span class="g">✔</span>  5/5   newest entry says where it left off
-  <span class="g">✔</span>  5/5   §4 OUTSTANDING table parses (10 rows, 6 columns)
-  <span class="g">✔</span> 15/15  .claude/CLAUDE.md carries the read-first / write-before-ending loop
-  <span class="g">✔</span>  5/5   size 19.1 KB (limit 1 MB)
-
-  <span class="v">████████████████████████</span>  <b>100/100</b>  <span class="g">excellent</span>
-
-<span class="m">and on a fresh template, a fix for every miss:</span>
-  <span class="r">✖</span>  0/15  §5 GOTCHAS has no real entry (template placeholders only)
-           <span class="y">→ record the first thing that cost you an hour</span>
-  <span class="v">██████████████</span><span class="m">░░░░░░░░░░</span>  <b>60/100</b>  <span class="y">needs work</span>  (pass mark 70)</div>
+    <h2 class="reveal">Is your agent's memory healthy? Find out here.</h2>
+    <p class="sub reveal">This is the real <code>doctor</code>, the same code the CLI runs, here in your browser. Enter any public GitHub repo, or paste your own <code>BRAIN.md</code> and <code>CLAUDE.md</code> / <code>AGENTS.md</code>. Pasted text never leaves this page.</p>
+    <div class="dr reveal">
+      <div class="dr-tabs" role="tablist">
+        <button role="tab" aria-selected="true" data-tab="repo">GitHub repo</button>
+        <button role="tab" aria-selected="false" data-tab="paste">Paste files</button>
+      </div>
+      <form class="dr-pane" id="dr-repo" autocomplete="off">
+        <label for="dr-slug" class="dr-l">Public repository</label>
+        <div class="dr-row"><input id="dr-slug" placeholder="owner/repo or a github.com URL" spellcheck="false"><button class="btn primary" type="submit">Run doctor</button></div>
+        <p class="dr-hint">Reads <code>BRAIN.md</code>, <code>.claude/CLAUDE.md</code>, <code>CLAUDE.md</code>, <code>AGENTS.md</code> and <code>.claude/agents/</code> from the default branch, straight from GitHub. Try <a href="#doctor" data-try="intotheveil/brain-kit">this kit's own repo</a> or <a href="#doctor" data-try="template">a fresh template</a>.</p>
+      </form>
+      <div class="dr-pane" id="dr-paste" hidden>
+        <div class="grid g2">
+          <div><label class="dr-l" for="dr-brain">BRAIN.md</label><textarea id="dr-brain" spellcheck="false" placeholder="Paste BRAIN.md here, or drop the file on this box. Leave it empty to see what a repo without a brain scores."></textarea></div>
+          <div><label class="dr-l" for="dr-loop">CLAUDE.md or AGENTS.md</label><textarea id="dr-loop" spellcheck="false" placeholder="Paste the file your agent reads first, or drop it here."></textarea></div>
+        </div>
+        <p class="dr-hint">Scores update as you type. Nothing is uploaded.</p>
+      </div>
+      <div class="term dr-out" id="dr-out" aria-live="polite"><span class="m">Pick a repo or paste a brain, and the report appears here.</span></div>
+      <div class="dr-actions" id="dr-actions" hidden><button class="copy" id="dr-copy-text">Copy report</button><button class="copy" id="dr-copy-link">Copy link to this result</button><span class="m" style="font-size:13px">Run it in CI too: <code>npx agent-brain-kit doctor</code> exits 1 below 70.</span></div>
+    </div>
   </div>
 </section>
 
@@ -257,6 +293,127 @@ document.querySelectorAll('.copy').forEach(function(b){
   var io=new IntersectionObserver(function(es){es.forEach(function(e){if(e.isIntersecting){e.target.classList.add('in');io.unobserve(e.target)}})},{threshold:.12});
   els.forEach(function(e){io.observe(e)});
 })();
+</script>
+<script type="module">
+// The in-browser doctor. assets/diagnose.js is a byte-identical copy of the CLI's
+// lib/diagnose.mjs (the test suite fails if they differ), so this grades exactly like
+// `npx agent-brain-kit doctor`. Repo mode fetches from GitHub in the visitor's own browser;
+// paste mode never sends anything anywhere.
+import { diagnoseFiles, CREW, PASS_MARK } from './assets/diagnose.js';
+
+const $ = (id) => document.getElementById(id);
+const out = $('dr-out');
+const esc = (s) => String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+const RAW = (slug, path) => `https://raw.githubusercontent.com/${slug}/HEAD/${path}`;
+let last = null; // { text, link }
+
+function render(r, header) {
+  const icon = { pass: '<span class="g">✔</span>', fail: '<span class="r">✖</span>', warn: '<span class="y">!</span>', info: '<span class="m">·</span>' };
+  const plain = { pass: '✔', fail: '✖', warn: '!', info: '·' };
+  const blind = r.checks.filter((c) => / — no brain to check$/.test(c.message));
+  const shown = r.checks.filter((c) => !blind.includes(c));
+  if (blind.length) shown.splice(shown.findIndex((c) => c.id === 'brain-exists') + 1, 0, { status: 'fail', points: 0, max: blind.reduce((s, c) => s + c.max, 0), message: `${blind.length} brain checks skipped — there is nothing to grade` });
+  const html = [`<b>brain doctor</b> <span class="m">→</span> ${esc(header)}`, ''];
+  const text = [`brain doctor → ${header}`, ''];
+  for (const c of shown) {
+    const pts = c.max ? `${String(c.points).padStart(2)}/${String(c.max).padEnd(2)}` : '     ';
+    html.push(`  ${icon[c.status]} <span class="m">${pts}</span>  ${esc(c.message)}`);
+    text.push(`  ${plain[c.status]} ${pts}  ${c.message}`);
+    if (c.fix) { html.push(`           <span class="y">→ ${esc(c.fix)}</span>`); text.push(`           → ${c.fix}`); }
+  }
+  const w = 24, f = Math.round((r.score / r.max) * w);
+  const cls = r.score >= PASS_MARK ? 'g' : r.score >= 40 ? 'y' : 'r';
+  const label = r.score >= 90 ? 'excellent' : r.score >= PASS_MARK ? 'healthy' : r.score >= 40 ? 'needs work' : 'critical';
+  html.push('', `  <span class="${cls}">${'█'.repeat(f)}</span><span class="m">${'░'.repeat(w - f)}</span>  <b class="${cls}">${r.score}/${r.max}</b>  <span class="${cls}">${label}</span>${r.pass ? '' : `<span class="m">  (pass mark ${PASS_MARK})</span>`}`);
+  text.push('', `  ${'█'.repeat(f)}${'░'.repeat(w - f)}  ${r.score}/${r.max}  ${label}`);
+  out.innerHTML = html.join('\n');
+  return text.join('\n');
+}
+
+const parseSlug = (s) => {
+  const m = String(s).trim().replace(/\.git$/, '').match(/^(?:https?:\/\/)?(?:www\.)?(?:github\.com\/)?([\w.-]+)\/([\w.-]+)(?:\/.*)?$/i);
+  return m ? `${m[1]}/${m[2]}` : null;
+};
+async function get(url) {
+  const r = await fetch(url, { cache: 'no-store' });
+  if (r.status === 404) return null;
+  if (!r.ok) throw new Error(`${r.status} from GitHub for ${url.replace(/^https:\/\/raw\.githubusercontent\.com\//, '')}`);
+  return r.text();
+}
+
+async function runRepo(input) {
+  const slug = parseSlug(input);
+  if (!slug) { out.innerHTML = '<span class="r">That does not look like owner/repo.</span>'; return; }
+  out.innerHTML = `<span class="m">fetching ${esc(slug)} from GitHub…</span>`;
+  try {
+    // A repo that does not exist (or is private) 404s every file; tell that apart from "no brain".
+    const meta = await fetch(`https://api.github.com/repos/${slug}`).catch(() => null);
+    if (meta && meta.status === 404) { out.innerHTML = `<span class="r">No public repo at ${esc(slug)}.</span> <span class="m">Private repos cannot be read from a browser. Paste the files instead.</span>`; $('dr-actions').hidden = true; return; }
+    const [brain, ...loops] = await Promise.all(['BRAIN.md', '.claude/CLAUDE.md', 'CLAUDE.md', 'AGENTS.md'].map((p) => get(RAW(slug, p))));
+    const loopFiles = ['.claude/CLAUDE.md', 'CLAUDE.md', 'AGENTS.md'].map((name, i) => ({ name, text: loops[i] })).filter((l) => l.text !== null);
+    let agents = [], crewChecked = true;
+    const ls = await fetch(`https://api.github.com/repos/${slug}/contents/.claude/agents`).catch(() => null);
+    if (ls && ls.ok) agents = (await ls.json()).map((f) => f.name.replace(/\.md$/, ''));
+    else if (!ls || ls.status !== 404) crewChecked = false;
+    const r = diagnoseFiles({ brain, loopFiles, agents }, { dir: slug });
+    if (!crewChecked) { const c = r.checks.find((x) => x.id === 'crew'); c.message = 'crew: not checked (GitHub API rate limit, try again in a while)'; }
+    const text = render(r, `github.com/${slug}`);
+    last = { text, link: `${location.origin}${location.pathname}#doctor=${encodeURIComponent(slug)}` };
+    $('dr-actions').hidden = false;
+  } catch (e) {
+    out.innerHTML = `<span class="r">Could not read ${esc(slug)}: ${esc(e.message)}</span>`;
+  }
+}
+
+async function runTemplate() {
+  // What a repo looks like straight after `npx agent-brain-kit setup` (setup stamps today's date).
+  out.innerHTML = '<span class="m">fetching the template…</span>';
+  const base = 'intotheveil/brain-kit';
+  const [tpl, loop] = await Promise.all([get(RAW(base, 'templates/BRAIN.template.md')), get(RAW(base, 'BRAIN_DISCIPLINE.md'))]);
+  const today = new Date().toISOString().slice(0, 10);
+  const brain = tpl.replace(/\*\*Last updated:\*\* <YYYY-MM-DD> by <session ref>/, `**Last updated:** ${today} by agent-brain-kit setup — template, not yet filled`);
+  const r = diagnoseFiles({ brain, loopFiles: [{ name: '.claude/CLAUDE.md', text: loop }], agents: CREW }, { dir: 'fresh template' });
+  last = { text: render(r, 'a repo straight after `setup`'), link: `${location.origin}${location.pathname}#doctor` };
+  $('dr-actions').hidden = false;
+}
+
+function runPaste() {
+  const b = $('dr-brain').value, l = $('dr-loop').value;
+  if (!b.trim() && !l.trim()) { out.innerHTML = '<span class="m">Paste a brain, and the report appears here.</span>'; $('dr-actions').hidden = true; return; }
+  const r = diagnoseFiles({ brain: b.trim() ? b : null, loopFiles: l.trim() ? [{ name: 'CLAUDE.md / AGENTS.md', text: l }] : [] }, { dir: 'pasted' });
+  const crew = r.checks.find((x) => x.id === 'crew'); crew.message = 'crew: not checked for pasted files';
+  last = { text: render(r, 'pasted files'), link: `${location.origin}${location.pathname}#doctor` };
+  $('dr-actions').hidden = false;
+}
+
+// tabs
+document.querySelectorAll('.dr-tabs button').forEach((b) => b.addEventListener('click', () => {
+  document.querySelectorAll('.dr-tabs button').forEach((x) => x.setAttribute('aria-selected', String(x === b)));
+  $('dr-repo').hidden = b.dataset.tab !== 'repo';
+  $('dr-paste').hidden = b.dataset.tab !== 'paste';
+  if (b.dataset.tab === 'paste') runPaste();
+}));
+$('dr-repo').addEventListener('submit', (e) => { e.preventDefault(); const v = $('dr-slug').value; history.replaceState(null, '', `#doctor=${encodeURIComponent(parseSlug(v) || v)}`); runRepo(v); });
+document.querySelectorAll('[data-try]').forEach((a) => a.addEventListener('click', (e) => {
+  e.preventDefault();
+  if (a.dataset.try === 'template') runTemplate().catch((err) => { out.innerHTML = `<span class="r">${esc(err.message)}</span>`; });
+  else { $('dr-slug').value = a.dataset.try; runRepo(a.dataset.try); }
+}));
+let t;
+for (const id of ['dr-brain', 'dr-loop']) {
+  const ta = $(id);
+  ta.addEventListener('input', () => { clearTimeout(t); t = setTimeout(runPaste, 150); });
+  ta.addEventListener('dragover', (e) => { e.preventDefault(); ta.classList.add('drag'); });
+  ta.addEventListener('dragleave', () => ta.classList.remove('drag'));
+  ta.addEventListener('drop', async (e) => { e.preventDefault(); ta.classList.remove('drag'); const f = e.dataTransfer.files[0]; if (f) { ta.value = await f.text(); runPaste(); } });
+}
+const flash = (b, msg) => { const o = b.textContent; b.textContent = msg; setTimeout(() => { b.textContent = o; }, 1400); };
+$('dr-copy-text').addEventListener('click', (e) => { if (last) navigator.clipboard.writeText(last.text).then(() => flash(e.target, 'Copied')).catch(() => {}); });
+$('dr-copy-link').addEventListener('click', (e) => { if (last) navigator.clipboard.writeText(last.link).then(() => flash(e.target, 'Copied')).catch(() => {}); });
+
+// A shared link (#doctor=owner/repo) runs straight away.
+const h = decodeURIComponent(location.hash);
+if (h.startsWith('#doctor=')) { const s = h.slice(8); $('dr-slug').value = s; runRepo(s); }
 </script>
 </body>
 </html>

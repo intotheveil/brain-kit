@@ -431,6 +431,38 @@ check('doctor prints no ANSI colour when NO_COLOR is set or output is piped', ()
   assert(/\/100/.test(r.out), `no score line: ${r.out}`);
 });
 
+// ── the website's doctor is the CLI's doctor ──────────────────────────────────────────────
+// docs/ is all GitHub Pages serves, so the in-browser doctor imports a COPY of lib/diagnose.mjs.
+// A copy that drifts would grade a pasted brain differently from `doctor` on the same file.
+check('docs/assets/diagnose.js is byte-identical to lib/diagnose.mjs', () => {
+  const a = readFileSync(join(KIT, '..', 'lib', 'diagnose.mjs'));
+  const b = readFileSync(join(KIT, '..', 'docs', 'assets', 'diagnose.js'));
+  assert(a.equals(b), 'the site copy differs — run: cp lib/diagnose.mjs docs/assets/diagnose.js');
+});
+
+check('lib/diagnose.mjs imports nothing (it must run in a browser)', () => {
+  const src = readFileSync(join(KIT, '..', 'lib', 'diagnose.mjs'), 'utf8');
+  assert(!/^\s*import\b/m.test(src) && !/\brequire\(/.test(src), 'diagnose.mjs has an import — the website copy would break');
+});
+
+await (async () => {
+  const name = 'diagnoseFiles on pasted strings grades exactly like the CLI on files';
+  try {
+    const { diagnoseFiles } = await import(new URL('../lib/diagnose.mjs', import.meta.url));
+    const d = tempDir('kit-doctor-');
+    const brain = readFileSync(EXAMPLE, 'utf8');
+    const loop = readFileSync(join(KIT, '..', 'BRAIN_DISCIPLINE.md'), 'utf8');
+    writeFileSync(join(d, 'BRAIN.md'), brain, 'utf8');
+    writeFileSync(join(d, 'AGENTS.md'), loop, 'utf8');
+    const cliRes = doctorJson(d).j;
+    const web = diagnoseFiles({ brain, loopFiles: [{ name: 'AGENTS.md', text: loop }] }, { dir: cliRes.dir });
+    const pick = (r) => JSON.stringify({ s: r.score, c: r.checks.map((x) => [x.id, x.status, x.points, x.message]) });
+    assert(pick(web) === pick(cliRes), `web ${web.score} vs cli ${cliRes.score}`);
+    assert(diagnoseFiles({}).score === 0, 'an empty paste must score 0');
+    console.log(`  PASS  ${name}`); passed += 1;
+  } catch (err) { console.log(`  FAIL  ${name}\n        ${err.message}`); failed += 1; }
+})();
+
 for (const r of roots) rmSync(r, { recursive: true, force: true });
 
 console.log('--------------------------------------------------------------');

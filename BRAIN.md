@@ -8,7 +8,7 @@
 > Yes, this repo keeps the discipline it ships. A kit that told you to keep a brain while keeping
 > none would be worth exactly what it cost you.
 
-**Last updated:** 2026-11-05 by Claude Code (Opus 5.5, Windows desktop) — **0.2.0 built: the crew ships, `setup` + `doctor`, drift ported, receipts + Hall of Gotchas, animated README, GitHub Pages site in `docs/`. `agent-brain-kit` + `claude-brain-kit` 0.2.0 LIVE on npm, all three packages (verify-published 59/0, CI green).** Previously 2026-10-17 — core ported, README example, v0.1.0 release, r/ClaudeAI post made by the operator. Previously 2026-09-13 — **published.** Public on
+**Last updated:** 2026-11-05 by Claude Code (Opus 5.5, Windows desktop) — **launch kit: in-browser doctor on the site (shared `lib/diagnose.mjs`), a REAL-run recording (60 → 85 from one real Claude session), og/social preview cards, 19 Hall of Gotchas cards, v0.2.0 GitHub release.** Before that, same day: **0.2.0 built: the crew ships, `setup` + `doctor`, drift ported, receipts + Hall of Gotchas, animated README, GitHub Pages site in `docs/`. `agent-brain-kit` + `claude-brain-kit` 0.2.0 LIVE on npm, all three packages (verify-published 59/0, CI green).** Previously 2026-10-17 — core ported, README example, v0.1.0 release, r/ClaudeAI post made by the operator. Previously 2026-09-13 — **published.** Public on
 GitHub (MIT) and live on npm as three packages, verified from the registry by a 39-check harness.
 **Zero stars, zero users, hours old** — which is the honest state and also what blocks the curated
 lists (§4 L1).
@@ -47,6 +47,23 @@ a stranger in one command.
   packages) · `test/` · `docs/` (NOT shipped to npm: GitHub Pages site `index.html`, `assets/`
   animated SVGs, `receipts.md`, `hall-of-gotchas.md`) · `scripts/gen-demo-svg.py` (generates
   `docs/assets/demo.svg`; edit the script, not the SVG).
+- **`doctor` is two halves.** `lib/diagnose.mjs` is PURE (no imports at all): `diagnoseFiles({brain,
+  loopFiles:[{name,text}], agents}, {dir, today})` grades contents. `lib/doctor.mjs` reads the disk,
+  calls it, and renders. The website's doctor (`docs/index.html` `#doctor`) imports
+  `docs/assets/diagnose.js`, a BYTE-IDENTICAL copy (Pages serves only `docs/`). `test-kit.mjs`
+  fails if the copies differ or if diagnose.mjs grows an import, and asserts that the string path
+  and the CLI give the same checks. After ANY edit to `lib/diagnose.mjs`:
+  `cp lib/diagnose.mjs docs/assets/diagnose.js`. Repo mode fetches each file from
+  `raw.githubusercontent.com/<slug>/HEAD/<file>`, plus 2 GitHub API calls (repo exists? `.claude/agents` listing; 60/h unauth);
+  `#doctor=owner/repo` auto-runs, so results are shareable links.
+- **Media is generated, never hand-edited.** `scripts/render-demo-gif.cjs` → `demo.gif`;
+  `scripts/real-run/render.cjs` → `real-run.{gif,mp4}` + poster from `scripts/real-run/captures/`
+  (raw output of a real run; provenance in its README) via `player.html` (a frame = pure function
+  of time); `scripts/cards/render.cjs` → `docs/assets/og.png` (1200×630, the page's og:image),
+  `docs/assets/social-preview.png` (1280×640, for GitHub Settings, manual upload) and
+  `docs/cards/NN-*.png` (19, parsed from `hall-of-gotchas.md`; exits 1 if any card overflows).
+  All need Playwright + Chrome (+ ffmpeg for video); run with `NODE_PATH` pointing at a
+  node_modules that has playwright, since this repo has no dependencies.
 - **`setup [dir]`** installs BRAIN.md, `.claude/CLAUDE.md` (loop only; `--full` composes the
   constitution), `.claude/agents/`, `.claude/hooks/` + `settings.json`. Never overwrites; merges an
   existing settings.json by hook script name (backup `settings.json.pre-brain-kit` once); honours
@@ -78,8 +95,12 @@ a stranger in one command.
 - **🟢 Landing page LIVE** at https://intotheveil.github.io/brain-kit/ (Pages, legacy build from
   `main` /docs, enabled by the operator 2026-11-05). Checked live: 200, no console errors, no
   horizontal scroll at 1280 and 390, both SVGs load. Every push to main redeploys it.
+- **🟢 Launch kit done:** in-browser doctor (`#doctor`), real-run video section, og:image + Twitter
+  card meta, 19 gotcha cards in `docs/cards/`, v0.2.0 GitHub release. `test-kit.mjs` 31/0.
+- **🟡 GitHub social preview NOT set:** there is no API for it. The operator uploads
+  `docs/assets/social-preview.png` in repo Settings → General → Social preview (L11).
 - **⚪️ Few stars, few users.** It is what L1/L3 are for.
-- **Next:** the launch posts (L9). Drafts + demo GIF/MP4 were handed to the operator 2026-11-05.
+- **Next:** the launch posts (L9). Drafts, demo GIF/MP4 and the real-run GIF are with the operator.
 
 ---
 
@@ -94,7 +115,8 @@ a stranger in one command.
 | L5  | 🟡 | bug | ~~`claude-brain-kit@0.1.0` is permanently broken on npm~~ — **CLOSED 2026-09-13 as MITIGATED, not fixed.** It published depending on `brain-kit@^0.1.0`, a package the name-similarity guard then made impossible. npm does not allow unpublishing after 72h, so **the bad version stays on the registry forever** and anyone pinning that exact version gets a failure. What was done is all that can be: it is `npm deprecate`d with a pointer, and `latest` is 0.1.2, which resolves correctly. Closed because no action remains — not because the wart is gone. | closed | 2026-09-13 |
 | L6  | 🔵 | idea | ~~No CI~~ — **CLOSED 2026-09-13.** `.github/workflows/verify.yml`, two jobs with different jobs to do: **`repo`** on every push/PR (every shell script parses, the 9 `kit.mjs` unit tests, manifests are valid JSON, no private fleet reference leaked) and **`published`** on a weekly schedule, which downloads all three packages from npm into a throwaway dir and ignores the working tree entirely. The scheduled half is the point — the repo can be healthy while the ARTIFACT is broken, which already happened here when `claude-brain-kit@0.1.0` shipped depending on a package that could never exist. Every step dry-run locally first, which is how the leak-scan was caught matching its own pattern. | closed | 2026-09-13 |
 | L9  | 🟡 | task | **Launch posts** for 0.2.0 (r/ClaudeCode, r/ClaudeAI follow-up, X), lead with the 57 QA failures and the Hall of Gotchas. Operator posts; nothing is posted by an agent. | open | 2026-11-05 |
-| L10 | 🔵 | idea | `setup` could add a `.gitattributes` line forcing LF on `.claude/hooks/*.sh` (CRLF breaks bash hooks on Windows checkouts with autocrlf). Also carry back upstream: verify-kit's "BRAIN.md §N is not a CLAUDE.md citation" filter and the generalized §10 wording. | open | 2026-11-05 |
+| L10 | 🔵 | idea | `setup` could add a `.gitattributes` line forcing LF on `.claude/hooks/*.sh` (CRLF breaks bash hooks on Windows checkouts with autocrlf). Also carry back upstream: verify-kit's "BRAIN.md §N is not a CLAUDE.md citation" filter and the generalized §10 wording. **Seen for real 2026-11-05:** committing a `setup`-installed repo on this machine (`core.autocrlf=true`) warned "LF will be replaced by CRLF" for every `.claude/hooks/*.sh`. | open | 2026-11-05 |
+| L11 | 🟡 | task | **Upload the GitHub social preview:** repo Settings → General → Social preview → `docs/assets/social-preview.png`. No API exists, so only the operator can do it. Until then, links to the REPO show GitHub's default card (links to the SITE already use `og.png`). | open | 2026-11-05 |
 
 ---
 
@@ -109,6 +131,17 @@ a stranger in one command.
   through a Bash heredoc wrote a literal line break where the source said `'\n'` (and a `\1` in the
   harness became a control byte, which then "passed" on garbage). For any text that contains
   escapes, write the file with an editor tool, then grep the bytes (`od -c`) before trusting it.
+
+- **🔴 A `.mjs` MODULE CAN BE REFUSED BY THE BROWSER: SOME SERVERS SEND IT AS `text/plain`.**
+  Python's `http.server` on Windows did, and a module script with the wrong MIME type fails to
+  load with only a console error, so the in-browser doctor silently did nothing. The site's copy
+  is `diagnose.js` for that reason. Same bytes, and every server labels `.js` correctly.
+
+- **🔴 CENTRED FLEX CONTENT OVERFLOWS UPWARD, WHERE `scrollHeight` CANNOT SEE IT.** The card
+  fitter checked `scrollHeight > clientHeight`, reported all 19 cards as fitting, and every card
+  had text running into its header. With `justify-content:center` the overflow goes out of the
+  top, which is outside the scrollable area. Measure the children's heights instead, and LOOK at
+  one output before trusting a fitter's "fits".
 
 - **🔴 `npm view` CAN SHOW A STALE VERSION LIST MINUTES AFTER A PUBLISH**, even with
   `--prefer-online`: the scoped alias read 0.1.1 while 0.2.0 had been live for minutes, and the
@@ -163,6 +196,25 @@ a stranger in one command.
 ---
 
 ## 6. CHANGELOG
+
+### 2026-11-05 — launch kit: browser doctor, a real run, share cards, release
+- Did: split `doctor` into a pure `lib/diagnose.mjs` + fs/render `lib/doctor.mjs` (behaviour
+  unchanged: the 28 earlier tests stayed green, and the CLI scores this repo the same as before).
+  Built the in-browser doctor (repo / paste / shareable `#doctor=` link) on a byte-identical copy,
+  plus 3 tests (identical copy, no imports, strings == CLI). The drift test was proven to fail by
+  appending one line to the copy.
+- Did: a REAL run in a throwaway sample repo with the published 0.2.0. `setup` created 17 files,
+  doctor gave 60, then `claude -p "fill BRAIN.md §1–§2 from the codebase"` (sonnet, 74 s) ran, and
+  doctor gave 85. Unprompted, the session also wrote a changelog entry with "Left off" and bumped
+  the date, because the loop told it to. That is the strongest proof the kit has, and it is now
+  the site's and README's "real run" section. Captures + provenance are in `scripts/real-run/captures/`.
+- Did: og:image + Twitter card meta; `og.png`, `social-preview.png`, 19 gotcha cards; README
+  real-run GIF and browser-doctor link; Hall links the cards; v0.2.0 GitHub release; repo
+  description now mentions the crew.
+- Resolved: `doctor` on this repo gave 95: the 2 previous changelog entries had no "Left off" line.
+  It was right. This entry has one.
+- Left off: L11 (operator uploads the social preview), then L9 launch posts. Nothing else is
+  owed by an agent. Next agent work, if any: L10 `.gitattributes` for hooks.
 
 ### 2026-11-05 — 0.2.0 published (2 of 3), demo GIF in the README
 - Operator published `agent-brain-kit` 0.2.0 and `claude-brain-kit` 0.2.0. `verify-published.sh`

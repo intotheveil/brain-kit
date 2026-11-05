@@ -76,6 +76,18 @@ Step 3 is the one everybody skips, and skipping it is what makes step 1 worthles
 The payoff is that handovers stop existing. The brain *is* the handover, continuously. Start new
 chats freely; nothing is lost.
 
+### A real run, not a mock-up
+
+The animation at the top is an illustration. This one is not. It shows a sample repo, the published
+package, and **one real Claude Code session** given only the prompt `setup` suggests:
+
+<img src="https://raw.githubusercontent.com/intotheveil/brain-kit/main/docs/assets/real-run.gif" alt="Real terminal recording. ls shows a small repo; npx agent-brain-kit setup creates 17 files; doctor scores 60 of 100; claude -p fills BRAIN.md sections 1 and 2, and on its own adds a changelog entry with a left-off pointer and bumps the date; doctor then scores 85 of 100, with only the gotchas section still empty." width="900">
+
+The session was asked to fill §1–§2. It **also** wrote a changelog entry, a "left off" pointer and a
+fresh date, because the loop in `.claude/CLAUDE.md` tells every session to. Nobody prompted those.
+60 → 85. §5 stays empty until something actually bites, because a gotcha has to be earned. Every
+line is real output ([raw captures](scripts/real-run/captures/)); the 74-second session is sped up.
+
 ---
 
 ## Quickstart
@@ -144,6 +156,12 @@ the read-first loop present in `CLAUDE.md`/`AGENTS.md`, and the size limits that
 ```
 
 `--json` for machines. Exits `1` below 70, so it can gate CI. CRLF-safe.
+
+**No install needed to try it:** [the website runs the same doctor in your browser](https://intotheveil.github.io/brain-kit/#doctor).
+Enter any public GitHub repo, or paste your own files (they never leave the page). It is the
+CLI's own grading code (`lib/diagnose.mjs`), not a re-implementation, and a test fails if the two
+copies ever differ. You can share a result as a link, for example
+[`#doctor=intotheveil/brain-kit`](https://intotheveil.github.io/brain-kit/#doctor=intotheveil/brain-kit).
 
 ---
 

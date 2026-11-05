@@ -1,0 +1,76 @@
+ BRAIN.md | 44 +++++++++++++++++++++++++++++++++-----------
+ 1 file changed, 33 insertions(+), 11 deletions(-)
+diff --git a/BRAIN.md b/BRAIN.md
+index 2caf4d2..a6fbd5f 100644
+--- a/BRAIN.md
++++ b/BRAIN.md
+@@ -9,16 +9,18 @@
+ > If you find yourself re-discovering something you (or a past session) already worked out,
+ > that's a signal it was missing from this brain — add it.
+ 
+-**Last updated:** 2026-11-05 by agent-brain-kit setup — template, not yet filled
+-**Status:** <live | in-development | paused | maintenance-only>
+-**Repo:** <path / git remote>   ·   **Deployed:** <url or "not deployed">
++**Last updated:** 2026-11-05 by Claude. §1–§2 filled from the codebase; §3–§8 are still the template.
++**Status:** in-development
++**Repo:** local git repo, no remote   ·   **Deployed:** not deployed
+ 
+ ---
+ 
+ ## 1. WHAT THIS IS  (never-changes context — read first, every time)
+ 
+-<One paragraph: what the product does, who it's for, what "done/working" means.
+-This is what a cold session needs to not be cold. Keep it current but stable.>
++A tiny URL shortener (v0.3.0). Clients POST an http(s) URL and get back a 6-character
++base62 code; visiting `/<code>` 302-redirects to the original URL and counts a hit; `/s/<code>`
++returns the link's stats as JSON. All state is in memory, so links are lost on restart.
++"Working" means `npm test` passes and the three endpoints below behave as described.
+ 
+ ---
+ 
+@@ -28,12 +30,26 @@ This is what a cold session needs to not be cold. Keep it current but stable.>
+ > "how does X work / where does Y live / what's the schema", the answer goes here so no
+ > future session ever has to figure it out again.
+ 
+-- **Stack:** <framework, db, hosting, key libs>
+-- **Data model:** <tables / key entities / where the schema lives (migration path)>
+-- **Key modules / where things live:** <the map — what's in which directory, entry points>
+-- **External services / keys:** <Supabase project, APIs, what env vars exist — NOT the values>
+-- **How to run / build / test / deploy:** <the actual commands>
+-- **Integration points:** <what talks to what>
++- **Stack:** Node.js, ES modules (`"type": "module"`), zero dependencies. Plain `node:http`
++  server; tests use the built-in `node:test` runner. No framework, no DB, no build step.
++- **Data model:** a single in-process `Map` in `src/store.js`: `code -> { url, hits }`.
++  No schema, no migrations, no persistence. Codes are 6 chars of base62 (`0-9a-zA-Z`),
++  generated with `Math.random()` (not cryptographically secure, so codes are guessable).
++  On collision `shorten` retries up to 5 times, then throws `code space exhausted`.
++- **Key modules / where things live:**
++  - `src/store.js`: `code()`, `shorten(url)`, `resolve(code)` (increments `hits`, returns url or null), `stats(code)` (returns `{url, hits}` or null).
++  - `src/server.js`: HTTP entry point and routing (below). Port comes from `PORT`, default 8080.
++  - `test/store.test.js`: store tests only (round trip, rejects non-http). The server has no tests.
++- **HTTP routes** (`src/server.js`):
++  - `POST /shorten` with JSON `{"url": "..."}`: 201 `{"code": "..."}`; 400 with a plain-text message for a bad URL, bad JSON or an exhausted code space.
++  - `GET /s/<code>`: 200 with `{url, hits}` JSON, or 404 with body `null`.
++  - `GET /<code>`: 302 to the stored URL (and `hits++`), otherwise 404 `not found`. Any method works here, not just GET.
++- **External services / keys:** none. The only env var is `PORT`.
++- **How to run / build / test / deploy:** `npm start` (runs `node src/server.js`), `npm test`
++  (runs `node --test`). There is no build, lint or typecheck script. No deploy setup.
++  Quick check: `curl -X POST localhost:8080/shorten -d '{"url":"https://example.com"}'`.
++- **Integration points:** `server.js` imports `shorten`, `resolve` and `stats` from `store.js`.
++  Nothing else; no outside systems. The repo has no git remote.
+ 
+ ---
+ 
+@@ -79,6 +95,12 @@ This is what a cold session needs to not be cold. Keep it current but stable.>
+ > The session log. Every work session appends one entry. This replaces the lossy handover:
+ > a new session reads the last few entries and knows exactly what just happened and why.
+ 
++### 2026-11-05 — fill §1–§2
++- Did: filled §1 and §2 by reading every source file (`package.json`, `src/*`, `test/*`, `README.md`). Nothing was run.
++- Decided: nothing architectural.
++- Resolved: none.
++- Left off: §3 CURRENT STATE and §4 OUTSTANDING are still the template. Observed but not recorded as issues: no persistence, `Math.random()` codes, no server tests, no body-size limit on `POST /shorten`, and `/<code>` accepts any HTTP method.
++
+ ### <YYYY-MM-DD> — <session ref>
+ - Did: <what changed>
+ - Decided: <any non-obvious choice + why>
