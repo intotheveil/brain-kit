@@ -97,8 +97,7 @@ a stranger in one command.
   horizontal scroll at 1280 and 390, both SVGs load. Every push to main redeploys it.
 - **🟢 Launch kit done:** in-browser doctor (`#doctor`), real-run video section, og:image + Twitter
   card meta, 19 gotcha cards in `docs/cards/`. `test-kit.mjs` 31/0. v0.2.0 GitHub release live
-  (github.com/intotheveil/brain-kit/releases/tag/v0.2.0, run by the operator). Repo description/topics
-  still owed (L12).
+  (github.com/intotheveil/brain-kit/releases/tag/v0.2.0, run by the operator).
 - **🟡 GitHub social preview NOT set:** there is no API for it. The operator uploads
   `docs/assets/social-preview.png` in repo Settings → General → Social preview (L11).
 - **⚪️ Few stars, few users.** It is what L1/L3 are for.
@@ -118,7 +117,6 @@ a stranger in one command.
 | L6  | 🔵 | idea | ~~No CI~~ — **CLOSED 2026-09-13.** `.github/workflows/verify.yml`, two jobs with different jobs to do: **`repo`** on every push/PR (every shell script parses, the 9 `kit.mjs` unit tests, manifests are valid JSON, no private fleet reference leaked) and **`published`** on a weekly schedule, which downloads all three packages from npm into a throwaway dir and ignores the working tree entirely. The scheduled half is the point — the repo can be healthy while the ARTIFACT is broken, which already happened here when `claude-brain-kit@0.1.0` shipped depending on a package that could never exist. Every step dry-run locally first, which is how the leak-scan was caught matching its own pattern. | closed | 2026-09-13 |
 | L9  | 🟡 | task | **Launch posts** for 0.2.0 (r/ClaudeCode, r/ClaudeAI follow-up, X), lead with the 57 QA failures and the Hall of Gotchas. Operator posts; nothing is posted by an agent. | open | 2026-11-05 |
 | L10 | 🔵 | idea | `setup` could add a `.gitattributes` line forcing LF on `.claude/hooks/*.sh` (CRLF breaks bash hooks on Windows checkouts with autocrlf). Also carry back upstream: verify-kit's "BRAIN.md §N is not a CLAUDE.md citation" filter and the generalized §10 wording. **Seen for real 2026-11-05:** committing a `setup`-installed repo on this machine (`core.autocrlf=true`) warned "LF will be replaced by CRLF" for every `.claude/hooks/*.sh`. | open | 2026-11-05 |
-| L12 | 🔵 | task | **Repo description/topics** (operator; refused to the agent as a public surface): `gh repo edit` with a description that mentions the crew, plus `--add-topic` subagents, coding-agents, llm-memory, ai-coding. The v0.2.0 RELEASE part is done (operator, 2026-11-05; tag at d4b1dfd = npm gitHead). | open | 2026-11-05 |
 | L11 | 🟡 | task | **Upload the GitHub social preview:** repo Settings → General → Social preview → `docs/assets/social-preview.png`. No API exists, so only the operator can do it. Until then, links to the REPO show GitHub's default card (links to the SITE already use `og.png`). | open | 2026-11-05 |
 
 ---
@@ -217,7 +215,7 @@ a stranger in one command.
   public surface; the commands are in L12.
 - Resolved: `doctor` on this repo gave 95: the 2 previous changelog entries had no "Left off" line.
   It was right. This entry has one.
-- Left off: release DONE by the operator. L12 (description/topics command), L11 (operator uploads the
+- Left off: release + description/topics DONE by the operator (L12 closed). L11 (operator uploads the
   social preview), then L9 launch posts. Nothing else is
   owed by an agent. Next agent work, if any: L10 `.gitattributes` for hooks.
 
