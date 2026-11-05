@@ -101,7 +101,7 @@ a stranger in one command.
 - **🟢 GitHub social preview set** (operator, 2026-11-05): GraphQL `usesCustomOpenGraphImage: true`,
   serving our 1280×640 `social-preview.png`.
 - **⚪️ Few stars, few users.** It is what L1/L3 are for.
-- **Next:** the launch posts (L9). Drafts, demo GIF/MP4 and the real-run GIF are with the operator.
+- **Next: LAUNCH TUESDAY 2026-11-10.** The day-by-day plan is §4 L9. Drafts are in `.launch/` (local, uncommitted).
 
 ---
 
@@ -115,7 +115,7 @@ a stranger in one command.
 | L4  | 🟠 | gap | ~~This repo and the private kit it came from will drift, and nothing prevents it~~ — **CLOSED 2026-09-13.** The upstream fleet added `compare-public.sh`, which records a FORK POINT for the 15 shared file pairs and reports which SIDE has moved since. Deliberately not a copier and not an equality check: most shared files legitimately differ (private names stripped, root resolved from this checkout, `templates/` layout), so copying would regress that and demanding equality would be permanently red and ignored. Proven on first real use — it caught a `kit.mjs` fix made upstream and not yet ported, which was then ported here (the flag-as-command fix + `test/test-kit.mjs`). **This repo is the downstream side: changes made HERE still need carrying back, and that is the direction with no one watching it.** | closed | 2026-09-13 |
 | L5  | 🟡 | bug | ~~`claude-brain-kit@0.1.0` is permanently broken on npm~~ — **CLOSED 2026-09-13 as MITIGATED, not fixed.** It published depending on `brain-kit@^0.1.0`, a package the name-similarity guard then made impossible. npm does not allow unpublishing after 72h, so **the bad version stays on the registry forever** and anyone pinning that exact version gets a failure. What was done is all that can be: it is `npm deprecate`d with a pointer, and `latest` is 0.1.2, which resolves correctly. Closed because no action remains — not because the wart is gone. | closed | 2026-09-13 |
 | L6  | 🔵 | idea | ~~No CI~~ — **CLOSED 2026-09-13.** `.github/workflows/verify.yml`, two jobs with different jobs to do: **`repo`** on every push/PR (every shell script parses, the 9 `kit.mjs` unit tests, manifests are valid JSON, no private fleet reference leaked) and **`published`** on a weekly schedule, which downloads all three packages from npm into a throwaway dir and ignores the working tree entirely. The scheduled half is the point — the repo can be healthy while the ARTIFACT is broken, which already happened here when `claude-brain-kit@0.1.0` shipped depending on a package that could never exist. Every step dry-run locally first, which is how the leak-scan was caught matching its own pattern. | closed | 2026-09-13 |
-| L9  | 🟡 | task | **Launch posts** for 0.2.0 (r/ClaudeCode, r/ClaudeAI follow-up, X), lead with the 57 QA failures and the Hall of Gotchas. Operator posts; nothing is posted by an agent. | open | 2026-11-05 |
+| L9  | 🟡 | task | **LAUNCH 0.2.0 — Tuesday 2026-11-10.** The operator posts; nothing is posted by an agent. **Tue 10 Nov, 15:00–16:00 Greece (08:00–09:00 US Eastern): Show HN** (link the repo, the HN text as first comment, stay 2 h to answer). **Tue ~18:00–19:00 Greece: X thread** with `docs/assets/real-run.gif` on the first tweet. **Wed 11 Nov: r/ClaudeCode** (check the sidebar rules and flair; not r/ClaudeAI again so soon, at most a short 0.2.0 update there a week later). **Thu 12 Nov: LinkedIn.** **From Fri 13 Nov: one card a day** from `docs/cards/` on X and LinkedIn. **~17 Nov: awesome-claude-code** (L1, web issue form only). Drafts: `.launch/launch-posts.md` in this checkout, LOCAL ONLY (excluded via `.git/info/exclude`; never commit a pre-launch copy). Every post links `https://intotheveil.github.io/brain-kit/#doctor`. Afterwards, record what was posted where, plus stars and HN rank, in §6. | open | 2026-11-05 |
 | L10 | 🔵 | idea | `setup` could add a `.gitattributes` line forcing LF on `.claude/hooks/*.sh` (CRLF breaks bash hooks on Windows checkouts with autocrlf). Also carry back upstream: verify-kit's "BRAIN.md §N is not a CLAUDE.md citation" filter and the generalized §10 wording. **Seen for real 2026-11-05:** committing a `setup`-installed repo on this machine (`core.autocrlf=true`) warned "LF will be replaced by CRLF" for every `.claude/hooks/*.sh`. | open | 2026-11-05 |
 
 ---
@@ -214,7 +214,7 @@ a stranger in one command.
   public surface; the commands are in L12.
 - Resolved: `doctor` on this repo gave 95: the 2 previous changelog entries had no "Left off" line.
   It was right. This entry has one.
-- Left off: release + description/topics DONE by the operator (L12 closed). Social preview uploaded (L11 closed). Only L9 remains: the launch posts. Nothing else is
+- Left off: release + description/topics DONE by the operator (L12 closed). Social preview uploaded (L11 closed). Only L9 remains: the launch, planned for Tue 2026-11-10 (schedule in L9). Nothing else is
   owed by an agent. Next agent work, if any: L10 `.gitattributes` for hooks.
 
 ### 2026-11-05 — 0.2.0 published (2 of 3), demo GIF in the README
