@@ -8,7 +8,7 @@
 > Yes, this repo keeps the discipline it ships. A kit that told you to keep a brain while keeping
 > none would be worth exactly what it cost you.
 
-**Last updated:** 2026-11-05 by Claude Code (Opus 5.5, Windows desktop) — **0.2.0 built: the crew ships, `setup` + `doctor`, drift ported, receipts + Hall of Gotchas, animated README, GitHub Pages site in `docs/`.** npm publish owed (operator login). Previously 2026-10-17 — core ported, README example, v0.1.0 release, r/ClaudeAI post made by the operator. Previously 2026-09-13 — **published.** Public on
+**Last updated:** 2026-11-05 by Claude Code (Opus 5.5, Windows desktop) — **0.2.0 built: the crew ships, `setup` + `doctor`, drift ported, receipts + Hall of Gotchas, animated README, GitHub Pages site in `docs/`. `agent-brain-kit` + `claude-brain-kit` 0.2.0 LIVE on npm (verify-published 59/0, CI green); scoped alias still 0.1.1.** Previously 2026-10-17 — core ported, README example, v0.1.0 release, r/ClaudeAI post made by the operator. Previously 2026-09-13 — **published.** Public on
 GitHub (MIT) and live on npm as three packages, verified from the registry by a 39-check harness.
 **Zero stars, zero users, hours old** — which is the honest state and also what blocks the curated
 lists (§4 L1).
@@ -72,13 +72,14 @@ a stranger in one command.
 
 ## 3. CURRENT STATE
 
-- **🟡 0.2.0 built, committed and pushed, NOT on npm yet** (L7). `node test/test-kit.mjs` 28/0;
-  against a packed tarball the published harness passes 56 checks, the 3 alias checks fail until
-  0.2.0 is on the registry. npm still serves 0.1.0, so the README's `npx agent-brain-kit setup`
-  does not work for strangers until L7 is done.
+- **🟢 0.2.0 on npm** for `agent-brain-kit` and `claude-brain-kit` (published 2026-11-05 05:43 UTC).
+  `bash test/verify-published.sh` 59 PASS / 0 FAIL; CI both jobs green. **`@alexadamis/brain-kit` is
+  still 0.1.1**, which depends on `agent-brain-kit ^0.1.0`, so `npx @alexadamis/brain-kit` gets the
+  OLD kit with no `setup`/`doctor` (L7). The harness misses this: its alias check only asserts
+  "runs the shared implementation", not which version.
 - **🟢 Landing page** `docs/index.html` (GitHub Pages from `main` /docs, L8).
 - **⚪️ Few stars, few users.** It is what L1/L3 are for.
-- **Next:** L7 publish, L8 Pages check, then the launch posts (L9).
+- **Next:** L7 scoped alias publish, L8 enable Pages (404 on 2026-11-05), then the launch posts (L9).
 
 ---
 
@@ -92,8 +93,8 @@ a stranger in one command.
 | L4  | 🟠 | gap | ~~This repo and the private kit it came from will drift, and nothing prevents it~~ — **CLOSED 2026-09-13.** The upstream fleet added `compare-public.sh`, which records a FORK POINT for the 15 shared file pairs and reports which SIDE has moved since. Deliberately not a copier and not an equality check: most shared files legitimately differ (private names stripped, root resolved from this checkout, `templates/` layout), so copying would regress that and demanding equality would be permanently red and ignored. Proven on first real use — it caught a `kit.mjs` fix made upstream and not yet ported, which was then ported here (the flag-as-command fix + `test/test-kit.mjs`). **This repo is the downstream side: changes made HERE still need carrying back, and that is the direction with no one watching it.** | closed | 2026-09-13 |
 | L5  | 🟡 | bug | ~~`claude-brain-kit@0.1.0` is permanently broken on npm~~ — **CLOSED 2026-09-13 as MITIGATED, not fixed.** It published depending on `brain-kit@^0.1.0`, a package the name-similarity guard then made impossible. npm does not allow unpublishing after 72h, so **the bad version stays on the registry forever** and anyone pinning that exact version gets a failure. What was done is all that can be: it is `npm deprecate`d with a pointer, and `latest` is 0.1.2, which resolves correctly. Closed because no action remains — not because the wart is gone. | closed | 2026-09-13 |
 | L6  | 🔵 | idea | ~~No CI~~ — **CLOSED 2026-09-13.** `.github/workflows/verify.yml`, two jobs with different jobs to do: **`repo`** on every push/PR (every shell script parses, the 9 `kit.mjs` unit tests, manifests are valid JSON, no private fleet reference leaked) and **`published`** on a weekly schedule, which downloads all three packages from npm into a throwaway dir and ignores the working tree entirely. The scheduled half is the point — the repo can be healthy while the ARTIFACT is broken, which already happened here when `claude-brain-kit@0.1.0` shipped depending on a package that could never exist. Every step dry-run locally first, which is how the leak-scan was caught matching its own pattern. | closed | 2026-09-13 |
-| L7  | 🔴 | task | **Publish 0.2.0 to npm.** Needs the operator's npm login on this machine (`npm whoami` was 401 on 2026-11-05). Order matters (§5): `npm publish` in the root FIRST, then `packages/claude-brain-kit`, then `packages/brain-kit-scoped` (`--access public`). Then `bash test/verify-published.sh` must be all green. | open | 2026-11-05 |
-| L8  | 🟡 | task | **GitHub Pages** serving `docs/` from `main` at `intotheveil.github.io/brain-kit`. Confirm the page loads and both SVGs animate. | open | 2026-11-05 |
+| L7  | 🟡 | task | **Publish the scoped alias 0.2.0:** `npm publish --access public` in `packages/brain-kit-scoped`. The root and `claude-brain-kit` 0.2.0 are live (2026-11-05). Needs the operator (npm 2FA in a real terminal; `! npm login` cannot finish the web login). | open | 2026-11-05 |
+| L8  | 🟡 | task | **GitHub Pages** serving `docs/` from `main` at `intotheveil.github.io/brain-kit`. Settings → Pages → main, `/docs` (operator; an agent may not create a public surface). URL 404 on 2026-11-05. Then confirm the page loads and both SVGs animate. | open | 2026-11-05 |
 | L9  | 🟡 | task | **Launch posts** for 0.2.0 (r/ClaudeCode, r/ClaudeAI follow-up, X), lead with the 57 QA failures and the Hall of Gotchas. Operator posts; nothing is posted by an agent. | open | 2026-11-05 |
 | L10 | 🔵 | idea | `setup` could add a `.gitattributes` line forcing LF on `.claude/hooks/*.sh` (CRLF breaks bash hooks on Windows checkouts with autocrlf). Also carry back upstream: verify-kit's "BRAIN.md §N is not a CLAUDE.md citation" filter and the generalized §10 wording. | open | 2026-11-05 |
 
@@ -160,7 +161,11 @@ a stranger in one command.
 
 ## 6. CHANGELOG
 
-### 2026-11-05 — demo GIF in the README
+### 2026-11-05 — 0.2.0 published (2 of 3), demo GIF in the README
+- Operator published `agent-brain-kit` 0.2.0 and `claude-brain-kit` 0.2.0. `verify-published.sh`
+  59/0; re-ran CI run 41975157730, both jobs green. Scoped alias still 0.1.1 (L7). Pages still 404 (L8).
+- `! npm login` from the agent prompt fails: it times out waiting on the web login, falls back to a
+  `Username:` prompt on a null stdin, and exits 1. npm login has to happen in a real terminal.
 - `docs/assets/demo.gif` (dark, 900×372, 10 fps, 18 s loop, 118 KB) rendered from `demo.svg` by
   `scripts/render-demo-gif.cjs` + ffmpeg (two-pass palette); for X/launch posts and the README hero.
 - README hero now points at the GIF by ABSOLUTE raw.githubusercontent URL: npmjs.com does not
