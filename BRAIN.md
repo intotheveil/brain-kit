@@ -75,9 +75,11 @@ a stranger in one command.
 - **🟢 0.2.0 on npm, all three packages:** `agent-brain-kit` 05:43 UTC, `claude-brain-kit`, and
   `@alexadamis/brain-kit` 05:45 UTC (depends on `^0.2.0`), all 2026-11-05. `verify-published.sh`
   59/0; CI both jobs green.
-- **🟢 Landing page** `docs/index.html` (GitHub Pages from `main` /docs, L8).
+- **🟢 Landing page LIVE** at https://intotheveil.github.io/brain-kit/ (Pages, legacy build from
+  `main` /docs, enabled by the operator 2026-11-05). Checked live: 200, no console errors, no
+  horizontal scroll at 1280 and 390, both SVGs load. Every push to main redeploys it.
 - **⚪️ Few stars, few users.** It is what L1/L3 are for.
-- **Next:** L8 enable Pages (404 on 2026-11-05), then the launch posts (L9).
+- **Next:** the launch posts (L9). Drafts + demo GIF/MP4 were handed to the operator 2026-11-05.
 
 ---
 
@@ -91,7 +93,6 @@ a stranger in one command.
 | L4  | 🟠 | gap | ~~This repo and the private kit it came from will drift, and nothing prevents it~~ — **CLOSED 2026-09-13.** The upstream fleet added `compare-public.sh`, which records a FORK POINT for the 15 shared file pairs and reports which SIDE has moved since. Deliberately not a copier and not an equality check: most shared files legitimately differ (private names stripped, root resolved from this checkout, `templates/` layout), so copying would regress that and demanding equality would be permanently red and ignored. Proven on first real use — it caught a `kit.mjs` fix made upstream and not yet ported, which was then ported here (the flag-as-command fix + `test/test-kit.mjs`). **This repo is the downstream side: changes made HERE still need carrying back, and that is the direction with no one watching it.** | closed | 2026-09-13 |
 | L5  | 🟡 | bug | ~~`claude-brain-kit@0.1.0` is permanently broken on npm~~ — **CLOSED 2026-09-13 as MITIGATED, not fixed.** It published depending on `brain-kit@^0.1.0`, a package the name-similarity guard then made impossible. npm does not allow unpublishing after 72h, so **the bad version stays on the registry forever** and anyone pinning that exact version gets a failure. What was done is all that can be: it is `npm deprecate`d with a pointer, and `latest` is 0.1.2, which resolves correctly. Closed because no action remains — not because the wart is gone. | closed | 2026-09-13 |
 | L6  | 🔵 | idea | ~~No CI~~ — **CLOSED 2026-09-13.** `.github/workflows/verify.yml`, two jobs with different jobs to do: **`repo`** on every push/PR (every shell script parses, the 9 `kit.mjs` unit tests, manifests are valid JSON, no private fleet reference leaked) and **`published`** on a weekly schedule, which downloads all three packages from npm into a throwaway dir and ignores the working tree entirely. The scheduled half is the point — the repo can be healthy while the ARTIFACT is broken, which already happened here when `claude-brain-kit@0.1.0` shipped depending on a package that could never exist. Every step dry-run locally first, which is how the leak-scan was caught matching its own pattern. | closed | 2026-09-13 |
-| L8  | 🟡 | task | **GitHub Pages** serving `docs/` from `main` at `intotheveil.github.io/brain-kit`. Settings → Pages → main, `/docs` (operator; an agent may not create a public surface). URL 404 on 2026-11-05. Then confirm the page loads and both SVGs animate. | open | 2026-11-05 |
 | L9  | 🟡 | task | **Launch posts** for 0.2.0 (r/ClaudeCode, r/ClaudeAI follow-up, X), lead with the 57 QA failures and the Hall of Gotchas. Operator posts; nothing is posted by an agent. | open | 2026-11-05 |
 | L10 | 🔵 | idea | `setup` could add a `.gitattributes` line forcing LF on `.claude/hooks/*.sh` (CRLF breaks bash hooks on Windows checkouts with autocrlf). Also carry back upstream: verify-kit's "BRAIN.md §N is not a CLAUDE.md citation" filter and the generalized §10 wording. | open | 2026-11-05 |
 
@@ -167,6 +168,8 @@ a stranger in one command.
 - Operator published `agent-brain-kit` 0.2.0 and `claude-brain-kit` 0.2.0. `verify-published.sh`
   59/0; re-ran CI run 41975157730, both jobs green. The scoped alias was in fact live at 05:45; Pages still 404 (L8).
 - L7 closed: all three packages at 0.2.0.
+- L8 closed: Pages live; added an inline data-URI favicon (the missing `/favicon.ico` was the
+  only console error on the live page).
 - `! npm login` from the agent prompt fails: it times out waiting on the web login, falls back to a
   `Username:` prompt on a null stdin, and exits 1. npm login has to happen in a real terminal.
 - `docs/assets/demo.gif` (dark, 900×372, 10 fps, 18 s loop, 118 KB) rendered from `demo.svg` by
